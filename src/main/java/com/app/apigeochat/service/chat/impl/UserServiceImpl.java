@@ -4,6 +4,7 @@ import com.app.apigeochat.domain.Role;
 import com.app.apigeochat.domain.User;
 import com.app.apigeochat.repository.UserRepository;
 import com.app.apigeochat.service.chat.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -12,6 +13,7 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
     public final UserRepository userRepo;
 
+    @Autowired
     public UserServiceImpl(UserRepository userRepository) {
         this.userRepo = userRepository;
     }

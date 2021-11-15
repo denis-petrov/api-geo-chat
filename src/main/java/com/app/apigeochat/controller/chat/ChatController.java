@@ -3,6 +3,7 @@ package com.app.apigeochat.controller.chat;
 import com.app.apigeochat.domain.Chat;
 import com.app.apigeochat.dto.ChatProvidingDto;
 import com.app.apigeochat.service.chat.ChatService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 public class ChatController {
     private final ChatService chatService;
 
+    @Autowired
     public ChatController(ChatService chatService) {
         this.chatService = chatService;
     }

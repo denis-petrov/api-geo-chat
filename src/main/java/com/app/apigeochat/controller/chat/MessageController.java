@@ -4,6 +4,7 @@ import com.app.apigeochat.domain.Message;
 import com.app.apigeochat.dto.MessageCreationDto;
 import com.app.apigeochat.dto.MessageProvidingDto;
 import com.app.apigeochat.service.chat.MessageService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 public class MessageController {
     public final MessageService messageService;
 
+    @Autowired
     public MessageController(MessageService messageService) {
         this.messageService = messageService;
     }

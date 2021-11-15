@@ -3,6 +3,7 @@ package com.app.apigeochat.controller.user;
 import com.app.apigeochat.domain.User;
 import com.app.apigeochat.dto.UserCreationDto;
 import com.app.apigeochat.service.chat.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -12,6 +13,7 @@ import java.util.UUID;
 public class UserController {
     private final UserService userService;
 
+    @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
     }

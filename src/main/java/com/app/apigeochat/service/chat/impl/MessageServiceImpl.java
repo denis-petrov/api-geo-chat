@@ -8,6 +8,7 @@ import com.app.apigeochat.repository.MessageRepository;
 import com.app.apigeochat.repository.UserRepository;
 import com.app.apigeochat.service.chat.MessageService;
 import com.app.apigeochat.service.chat.notification.Notifier;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ public class MessageServiceImpl implements MessageService {
     private final UserRepository userRepo;
     private final Notifier notifier;
 
+    @Autowired
     public MessageServiceImpl(
             MessageRepository messageRepo,
             ChatRepository chatRepo,

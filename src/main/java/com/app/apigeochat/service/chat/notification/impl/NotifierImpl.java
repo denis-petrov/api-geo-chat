@@ -11,6 +11,7 @@ import java.util.List;
 public class NotifierImpl implements Notifier {
     private final SimpMessagingTemplate simpMessagingTemplate;
 
+    @Autowired
     public NotifierImpl(SimpMessagingTemplate simpMessagingTemplate) {
         this.simpMessagingTemplate = simpMessagingTemplate;
     }

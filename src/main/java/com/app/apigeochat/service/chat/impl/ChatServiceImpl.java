@@ -5,6 +5,7 @@ import com.app.apigeochat.domain.User;
 import com.app.apigeochat.repository.ChatRepository;
 import com.app.apigeochat.repository.UserRepository;
 import com.app.apigeochat.service.chat.ChatService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +16,7 @@ public class ChatServiceImpl implements ChatService {
     private final ChatRepository chatRepo;
     private final UserRepository userRepo;
 
+    @Autowired
     public ChatServiceImpl(ChatRepository chatRepo, UserRepository userRepo) {
         this.chatRepo = chatRepo;
         this.userRepo = userRepo;
