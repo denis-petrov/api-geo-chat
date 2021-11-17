@@ -37,30 +37,30 @@ public class ChatController {
 
     @PostMapping("/updateName")
     public void updateName(
-            @RequestParam("chatId") UUID chatId,
+            @RequestParam("chatId") String chatId,
             @RequestParam("name") String newName
     ) {
-        chatService.updateName(chatId, newName);
+        chatService.updateName(UUID.fromString(chatId), newName);
     }
 
     @PostMapping("/remove")
-    public void remove(@RequestParam("chatId") UUID chatId) {
-        chatService.remove(chatId);
+    public void remove(@RequestParam("chatId") String chatId) {
+        chatService.remove(UUID.fromString(chatId));
     }
 
     @PostMapping("/addMember")
     public void addMember(
-            @RequestParam("chatId") UUID chatId,
-            @RequestParam("userId") UUID userId
+            @RequestParam("chatId") String chatId,
+            @RequestParam("userId") String userId
     ) {
-        chatService.addMember(chatId, userId);
+        chatService.addMember(UUID.fromString(chatId), UUID.fromString(userId));
     }
 
     @PostMapping("/removeMember")
     public void removeMember(
-            @RequestParam("chatId") UUID chatId,
-            @RequestParam("userId") UUID userId
+            @RequestParam("chatId") String chatId,
+            @RequestParam("userId") String userId
     ) {
-        chatService.removeMember(chatId, userId);
+        chatService.removeMember(UUID.fromString(chatId), UUID.fromString(userId));
     }
 }
