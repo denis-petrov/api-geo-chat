@@ -50,7 +50,7 @@ public class MessageController {
     }
 
     @PostMapping("/remove")
-    public void remove(@RequestParam("chatId") String chatId) {
-        messageService.remove(UUID.fromString(chatId));
+    public void remove(@RequestParam("messageId") String messageId) {
+        messageService.remove(UUID.fromString(messageId));
     }
 }
