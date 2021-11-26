@@ -11,8 +11,8 @@ import java.util.UUID;
 @Getter
 @Setter
 public class MessageCreationDto {
-    private UUID senderId;
-    private UUID chatId;
+    private String senderId;
+    private String chatId;
     private String message;
     private Date sentDate;
 }

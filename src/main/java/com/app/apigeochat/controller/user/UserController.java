@@ -19,8 +19,9 @@ public class UserController {
     }
 
     @PostMapping("/create")
-    public UUID create(@RequestBody UserCreationDto userDto) {
-        return this.userService.create(userDto.getName(), userDto.getEmail(), userDto.getPassword());
+    public UUID create(UserCreationDto userCreationDto) {
+        return this.userService.create(userCreationDto.getName(), userCreationDto.getPassword(),
+                userCreationDto.getEmail());
     }
 
     @GetMapping("/getByName")
@@ -34,7 +35,7 @@ public class UserController {
     }
 
     @PostMapping("/remove")
-    public void remove(@RequestParam("userId") UUID userId) {
-        userService.remove(userId);
+    public void remove(@RequestBody String userId) {
+        userService.remove(UUID.fromString(userId));
     }
 }

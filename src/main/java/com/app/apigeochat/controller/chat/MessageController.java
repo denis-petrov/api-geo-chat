@@ -1,6 +1,5 @@
 package com.app.apigeochat.controller.chat;
 
-import com.app.apigeochat.domain.Message;
 import com.app.apigeochat.dto.MessageCreationDto;
 import com.app.apigeochat.dto.MessageProvidingDto;
 import com.app.apigeochat.service.chat.MessageService;
@@ -25,33 +24,33 @@ public class MessageController {
     @PostMapping("/create")
     public UUID create(@RequestBody MessageCreationDto messageDto) {
         return messageService.create(
-                messageDto.getSenderId(),
-                messageDto.getChatId(),
+                UUID.fromString(messageDto.getSenderId()),
+                UUID.fromString(messageDto.getChatId()),
                 messageDto.getMessage(),
                 messageDto.getSentDate());
     }
 
     @GetMapping("/getLast")
     public List<MessageProvidingDto> getLast(
-            @RequestParam("chatId") UUID chatId,
+            @RequestParam("chatId") String chatId,
             @RequestParam("numberOfMessages") int numberOfMessages
     ) {
-        return messageService.getLast(chatId, numberOfMessages).stream()
+        return messageService.getLast(UUID.fromString(chatId), numberOfMessages).stream()
                 .map(MessageProvidingDto::new).collect(Collectors.toList());
     }
 
     @GetMapping("/getBefore")
     public List<MessageProvidingDto> getBefore(
-            @RequestParam("chatId") UUID chatId,
+            @RequestParam("chatId") String chatId,
             @RequestParam("numberOfMessages") int numberOfMessages,
             @RequestParam("date") Date date
     ) {
-        return messageService.getBefore(chatId, numberOfMessages, date).stream()
+        return messageService.getBefore(UUID.fromString(chatId), numberOfMessages, date).stream()
                 .map(MessageProvidingDto::new).collect(Collectors.toList());
     }
 
     @PostMapping("/remove")
-    public void remove(@RequestParam("chatId") UUID chatId) {
-        messageService.remove(chatId);
+    public void remove(@RequestParam("chatId") String chatId) {
+        messageService.remove(UUID.fromString(chatId));
     }
 }
