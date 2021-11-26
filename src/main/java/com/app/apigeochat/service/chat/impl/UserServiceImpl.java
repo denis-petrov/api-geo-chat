@@ -19,14 +19,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User get(UUID id) {
+    public User getById(UUID id) {
         return userRepo.getById(id);
     }
 
     @Override
-    public User get(String name) {
+    public User getByName(String name) {
         return userRepo.getByName(name);
     }
+
+    @Override
+    public User getByEmail(String email) {
+        return userRepo.getByEmail(email);
+    }
+
 
     @Override
     public UUID create(String username, String email, String password) {

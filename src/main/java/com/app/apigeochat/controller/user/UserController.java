@@ -1,11 +1,14 @@
 package com.app.apigeochat.controller.user;
 
 import com.app.apigeochat.domain.User;
-import com.app.apigeochat.dto.UserCreationDto;
+import com.app.apigeochat.dto.UserProvidingDto;
 import com.app.apigeochat.service.chat.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.ResourceAccessException;
 
+import java.util.Objects;
 import java.util.UUID;
 
 @RestController
@@ -19,23 +22,47 @@ public class UserController {
     }
 
     @PostMapping("/create")
-    public UUID create(UserCreationDto userCreationDto) {
-        return this.userService.create(userCreationDto.getName(), userCreationDto.getPassword(),
-                userCreationDto.getEmail());
+    public UUID create(
+            @RequestParam("name") String name,
+            @RequestParam("password") String password,
+            @RequestParam("email") String email
+    ) {
+        return this.userService.create(name, email, password);
     }
 
-    @GetMapping("/getByName")
-    public User getByName(@RequestParam("name") String name) {
-        return userService.get(name);
+    @PostMapping("/auth")
+    public User authByEmail(
+            @RequestParam("email") String email,
+            @RequestParam("password") String password
+    ) {
+        User user = userService.getByEmail(email);
+        if (Objects.equals(user.getPassword(), password)) {
+            return user;
+        } else {
+            throw new ResourceAccessException("Incorrect password");
+        }
+    }
+
+    @PostMapping("/auth")
+    public User authByName(
+            @RequestParam("name") String name,
+            @RequestParam("password") String password
+    ) {
+        User user = userService.getByName(name);
+        if (Objects.equals(user.getPassword(), password)) {
+            return user;
+        } else {
+            throw new ResourceAccessException("Incorrect password");
+        }
     }
 
     @GetMapping("/getById")
-    public User getById(@RequestParam("userId") UUID userId) {
-        return userService.get(userId);
+    public UserProvidingDto getById(@RequestParam("userId") String userId) {
+        return new UserProvidingDto(userService.getById(UUID.fromString(userId)));
     }
 
     @PostMapping("/remove")
-    public void remove(@RequestBody String userId) {
+    public void remove(@RequestParam("userId") String userId) {
         userService.remove(UUID.fromString(userId));
     }
 }
