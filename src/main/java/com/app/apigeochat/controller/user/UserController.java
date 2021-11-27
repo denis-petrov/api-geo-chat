@@ -30,7 +30,7 @@ public class UserController {
         return this.userService.create(name, email, password);
     }
 
-    @PostMapping("/auth")
+    @PostMapping("/authByEmail")
     public User authByEmail(
             @RequestParam("email") String email,
             @RequestParam("password") String password
@@ -43,7 +43,7 @@ public class UserController {
         }
     }
 
-    @PostMapping("/auth")
+    @PostMapping("/authByName")
     public User authByName(
             @RequestParam("name") String name,
             @RequestParam("password") String password
