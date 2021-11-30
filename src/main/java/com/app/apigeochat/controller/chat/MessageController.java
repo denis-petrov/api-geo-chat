@@ -1,6 +1,5 @@
 package com.app.apigeochat.controller.chat;
 
-import com.app.apigeochat.dto.MessageCreationDto;
 import com.app.apigeochat.dto.MessageProvidingDto;
 import com.app.apigeochat.service.chat.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,12 +21,13 @@ public class MessageController {
     }
 
     @PostMapping("/create")
-    public UUID create(@RequestBody MessageCreationDto messageDto) {
-        return messageService.create(
-                UUID.fromString(messageDto.getSenderId()),
-                UUID.fromString(messageDto.getChatId()),
-                messageDto.getMessage(),
-                messageDto.getSentDate());
+    public UUID create(
+            @RequestParam("senderId") String senderId,
+            @RequestParam("chatId") String chatId,
+            @RequestParam("message") String message,
+            @RequestParam("timestamp") Long timestamp
+    ) {
+        return messageService.create(UUID.fromString(senderId), UUID.fromString(chatId), message, new Date(timestamp));
     }
 
     @GetMapping("/getLast")
@@ -43,14 +43,14 @@ public class MessageController {
     public List<MessageProvidingDto> getBefore(
             @RequestParam("chatId") String chatId,
             @RequestParam("numberOfMessages") int numberOfMessages,
-            @RequestParam("date") Date date
+            @RequestParam("timestamp") Long timestamp
     ) {
-        return messageService.getBefore(UUID.fromString(chatId), numberOfMessages, date).stream()
-                .map(MessageProvidingDto::new).collect(Collectors.toList());
+        return messageService.getBefore(UUID.fromString(chatId), numberOfMessages, new Date(timestamp))
+                .stream().map(MessageProvidingDto::new).collect(Collectors.toList());
     }
 
     @PostMapping("/remove")
-    public void remove(@RequestParam("chatId") String chatId) {
-        messageService.remove(UUID.fromString(chatId));
+    public void remove(@RequestParam("messageId") String messageId) {
+        messageService.remove(UUID.fromString(messageId));
     }
 }

@@ -26,13 +26,14 @@ public class ChatController {
     }
 
     @GetMapping("/get")
-    public ChatProvidingDto getChat(@RequestParam("chatId") UUID chatId) {
-        return new ChatProvidingDto(chatService.getChat(chatId));
+    public ChatProvidingDto getChat(@RequestParam("chatId") String chatId) {
+        return new ChatProvidingDto(chatService.getChat(UUID.fromString(chatId)));
     }
 
     @GetMapping("/getAllForUser")
-    public List<ChatProvidingDto> getAllChatsForUser(@RequestParam("userId") UUID userId) {
-        return chatService.getAllForUser(userId).stream().map(ChatProvidingDto::new).collect(Collectors.toList());
+    public List<ChatProvidingDto> getAllChatsForUser(@RequestParam("userId") String userId) {
+        return chatService.getAllForUser(UUID.fromString(userId))
+                .stream().map(ChatProvidingDto::new).collect(Collectors.toList());
     }
 
     @PostMapping("/updateName")

@@ -9,9 +9,9 @@ import java.util.UUID;
 @Service
 @Transactional
 public interface UserService {
-    User get(UUID id);
-
-    User get(String name);
+    User getById(UUID id);
+    User getByName(String name);
+    User getByEmail(String email);
 
     UUID create(String username, String email, String password);
 

@@ -1,7 +1,6 @@
 package com.app.apigeochat.service.chat;
 
 import com.app.apigeochat.domain.Message;
-import com.app.apigeochat.dto.MessageCreationDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
