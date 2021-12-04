@@ -67,14 +67,10 @@ public class ChatService {
         return optionalChat.isPresent();
     }
 
-    public Optional<UUID> createChat(String name) {
-        if (chatRepo.existsByName(name)) {
-            Chat chat = new Chat();
-            chat.setName(name);
-            chat.setChatId(null);
-            return Optional.of(chatRepo.save(chat).getChatId());
-        } else {
-            return Optional.empty();
-        }
+    public UUID createChat(String name) {
+        Chat chat = new Chat();
+        chat.setName(name);
+        chat.setChatId(null);
+        return chatRepo.save(chat).getChatId();
     }
 }

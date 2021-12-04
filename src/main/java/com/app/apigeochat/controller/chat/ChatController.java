@@ -24,8 +24,7 @@ public class ChatController {
 
     @PostMapping("/create")
     public ResponseEntity<UUID> createChat(@RequestParam("name") String name) {
-        return chatService.createChat(name).map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        return ResponseEntity.ok(chatService.createChat(name));
     }
 
     @GetMapping("/get")
@@ -39,7 +38,8 @@ public class ChatController {
     public ResponseEntity<List<ChatProvidingDto>> getAllChatsForUser(@RequestParam("userId") String userId) {
         return ResponseEntity.ok(
                 chatService.getAllForUser(UUID.fromString(userId))
-                        .stream().map(ChatProvidingDto::new).collect(Collectors.toList())
+                        .stream().map(ChatProvidingDto::new)
+                        .collect(Collectors.toList())
         );
     }
 
