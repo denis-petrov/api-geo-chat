@@ -4,9 +4,11 @@ import com.app.apigeochat.domain.Chat;
 import com.app.apigeochat.dto.ChatProvidingDto;
 import com.app.apigeochat.service.chat.ChatService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -21,47 +23,68 @@ public class ChatController {
     }
 
     @PostMapping("/create")
-    public UUID createChat(@RequestParam("name") String name) {
-        return chatService.createChat(name);
+    public ResponseEntity<UUID> createChat(@RequestParam("name") String name) {
+        return chatService.createChat(name).map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/get")
-    public ChatProvidingDto getChat(@RequestParam("chatId") String chatId) {
-        return new ChatProvidingDto(chatService.getChat(UUID.fromString(chatId)));
+    public ResponseEntity<ChatProvidingDto> getChat(@RequestParam("chatId") String chatId) {
+        Optional<Chat> chat = chatService.getChat(UUID.fromString(chatId));
+        return chat.map(value -> ResponseEntity.ok(new ChatProvidingDto(value)))
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/getAllForUser")
-    public List<ChatProvidingDto> getAllChatsForUser(@RequestParam("userId") String userId) {
-        return chatService.getAllForUser(UUID.fromString(userId))
-                .stream().map(ChatProvidingDto::new).collect(Collectors.toList());
+    public ResponseEntity<List<ChatProvidingDto>> getAllChatsForUser(@RequestParam("userId") String userId) {
+        return ResponseEntity.ok(
+                chatService.getAllForUser(UUID.fromString(userId))
+                        .stream().map(ChatProvidingDto::new).collect(Collectors.toList())
+        );
     }
 
     @PostMapping("/updateName")
-    public void updateName(
+    public ResponseEntity<Void> updateName(
             @RequestParam("chatId") String chatId,
             @RequestParam("name") String newName
     ) {
-        chatService.updateName(UUID.fromString(chatId), newName);
+        if (chatService.updateName(UUID.fromString(chatId), newName)) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @PostMapping("/remove")
-    public void remove(@RequestParam("chatId") String chatId) {
-        chatService.remove(UUID.fromString(chatId));
+    public ResponseEntity<Void> remove(@RequestParam("chatId") String chatId) {
+        if (chatService.remove(UUID.fromString(chatId))) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @PostMapping("/addMember")
-    public void addMember(
+    public ResponseEntity<Void> addMember(
             @RequestParam("chatId") String chatId,
             @RequestParam("userId") String userId
     ) {
-        chatService.addMember(UUID.fromString(chatId), UUID.fromString(userId));
+        if (chatService.addMember(UUID.fromString(chatId), UUID.fromString(userId))) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @PostMapping("/removeMember")
-    public void removeMember(
+    public ResponseEntity<Void> removeMember(
             @RequestParam("chatId") String chatId,
             @RequestParam("userId") String userId
     ) {
-        chatService.removeMember(UUID.fromString(chatId), UUID.fromString(userId));
+        if (chatService.removeMember(UUID.fromString(chatId), UUID.fromString(userId))) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 }

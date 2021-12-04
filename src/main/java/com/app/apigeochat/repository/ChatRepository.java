@@ -9,4 +9,5 @@ import java.util.UUID;
 
 public interface ChatRepository extends JpaRepository<Chat, UUID> {
     List<Chat> findByMembersContains(User member);
+    boolean existsByName(String name);
 }
