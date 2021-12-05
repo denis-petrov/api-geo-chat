@@ -15,7 +15,7 @@ public class Notifier {
         this.simpMessagingTemplate = simpMessagingTemplate;
     }
 
-    public <T> void sendNotifications(T sentObject, List<String> endpoints) {
-        endpoints.forEach(endpoint -> simpMessagingTemplate.convertAndSend(endpoint, sentObject));
+    public <T> void sendNotifications(T sentObject, String endpoint, List<String> userIds) {
+        userIds.forEach(userId -> simpMessagingTemplate.convertAndSendToUser(userId, endpoint, sentObject));
     }
 }

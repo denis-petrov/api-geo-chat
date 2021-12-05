@@ -50,7 +50,7 @@ public class MessageService {
             message.setSentDate(sentDate);
 
             messageRepo.save(message);
-            notifier.sendNotifications(message.getMessageId(), getEndpoints(chat.get().getMembers(), "/create/%s"));
+            notifier.sendNotifications(message.getMessageId(), "/queue/message/create", getMemberIds(chat.get()));
 
             return Optional.ofNullable(message.getMessageId());
         } else {
@@ -63,7 +63,7 @@ public class MessageService {
         if (message.isPresent()) {
             Chat chat = message.get().getChat();
             messageRepo.deleteById(messageId);
-            notifier.sendNotifications(messageId, getEndpoints(chat.getMembers(), "/remove/%s"));
+            notifier.sendNotifications(messageId, "/queue/message/remove", getMemberIds(chat));
         }
         return message.isPresent();
     }
@@ -80,9 +80,7 @@ public class MessageService {
         return messageRepo.findMessagesBySentDateLessThanAndChatEqualsOrderBySentDateDesc(date, chat, pageable);
     }
 
-    private List<String> getEndpoints(Collection<User> users, String endpointFormat) {
-        return users.stream()
-                .map(user -> String.format(endpointFormat, user.getUserId()))
-                .collect(Collectors.toList());
+    private List<String> getMemberIds(Chat chat) {
+        return chat.getMembers().stream().map(user -> user.getUserId().toString()).collect(Collectors.toList());
     }
 }
