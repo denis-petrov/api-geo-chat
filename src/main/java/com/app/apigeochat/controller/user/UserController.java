@@ -12,9 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.ResourceAccessException;
 
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/user")
@@ -80,12 +79,21 @@ public class UserController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+
+    @GetMapping("/searchByName")
+    public ResponseEntity<List<UserProvidingDto>> searchByName(@RequestParam("substring") String substring) {
+        List<UserProvidingDto> foundUsers = Collections.emptyList();
+        if (!substring.isEmpty()) {
+            foundUsers = userService.searchByName(substring)
+                    .stream().map(UserProvidingDto::new)
+                    .collect(Collectors.toList());
+        }
+        return ResponseEntity.ok(foundUsers);
+    }
+
     @PostMapping("/remove")
     public ResponseEntity<Void> remove(@RequestParam("userId") String userId) {
-        if (userService.remove(UUID.fromString(userId))){
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.internalServerError().build();
-        }
+        userService.remove(UUID.fromString(userId));
+        return ResponseEntity.ok().build();
     }
 }

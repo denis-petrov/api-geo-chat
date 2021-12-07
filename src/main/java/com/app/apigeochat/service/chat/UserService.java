@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -32,6 +33,10 @@ public class UserService {
         return userRepo.findByEmail(email);
     }
 
+    public List<User> searchByName(String substring) {
+        return userRepo.findByNameContaining(substring);
+    }
+
     public Optional<UUID> create(String username, String email, String password) {
         if (userRepo.existsByName(username) || userRepo.existsByEmail(email)) {
             return Optional.empty();
@@ -45,7 +50,7 @@ public class UserService {
         }
     }
 
-    public boolean remove(UUID id) {
-        return userRepo.findAll().removeIf(user -> user.getUserId() == id);
+    public void remove(UUID id) {
+        userRepo.deleteById(id);
     }
 }

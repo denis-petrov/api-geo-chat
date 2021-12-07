@@ -50,7 +50,7 @@ public class MessageService {
             message.setSentDate(sentDate);
 
             messageRepo.save(message);
-            notifier.sendNotifications(message.getMessageId(), "/queue/message/create", getMemberIds(chat.get()));
+            notifier.sendNotifications(chat.get().getChatId(), "/queue/message/create", getMemberIds(chat.get()));
 
             return Optional.ofNullable(message.getMessageId());
         } else {
@@ -58,14 +58,13 @@ public class MessageService {
         }
     }
 
-    public boolean remove(UUID messageId) {
+    public void remove(UUID messageId) {
         Optional<Message> message = messageRepo.findById(messageId);
         if (message.isPresent()) {
             Chat chat = message.get().getChat();
             messageRepo.deleteById(messageId);
-            notifier.sendNotifications(messageId, "/queue/message/remove", getMemberIds(chat));
+            notifier.sendNotifications(chat.getChatId(), "/queue/message/remove", getMemberIds(chat));
         }
-        return message.isPresent();
     }
 
     public List<Message> getLast(UUID chatId, int numberOfMessages) {

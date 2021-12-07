@@ -57,11 +57,8 @@ public class ChatController {
 
     @PostMapping("/remove")
     public ResponseEntity<Void> remove(@RequestParam("chatId") String chatId) {
-        if (chatService.remove(UUID.fromString(chatId))) {
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.internalServerError().build();
-        }
+        chatService.remove(UUID.fromString(chatId));
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/addMember")

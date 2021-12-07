@@ -45,8 +45,8 @@ public class ChatService {
         return optionalChat.isPresent();
     }
 
-    public boolean remove(UUID chatId) {
-        return chatRepo.findAll().removeIf(chat -> chat.getChatId() == chatId);
+    public void remove(UUID chatId) {
+        chatRepo.deleteById(chatId);
     }
 
     public boolean addMember(UUID chatId, UUID userId) {

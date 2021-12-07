@@ -61,10 +61,7 @@ public class MessageController {
 
     @PostMapping("/remove")
     public ResponseEntity<Void> remove(@RequestParam("messageId") String messageId) {
-        if (messageService.remove(UUID.fromString(messageId))) {
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.internalServerError().build();
-        }
+        messageService.remove(UUID.fromString(messageId));
+        return ResponseEntity.ok().build();
     }
 }
