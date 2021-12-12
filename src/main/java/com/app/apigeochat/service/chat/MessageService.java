@@ -13,7 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.swing.text.html.Option;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -37,7 +36,8 @@ public class MessageService {
         this.notifier = notifier;
     }
 
-    public Optional<UUID> create(UUID senderId, UUID chatId, String text, Date sentDate) {
+    public Optional<UUID> create(UUID senderId, UUID chatId, String text, Date sentDate,
+                                 Set<String> attachments) {
         Message message = new Message();
 
         Optional<User> sender = userRepo.findById(senderId);
@@ -48,6 +48,7 @@ public class MessageService {
             message.setChat(chat.get());
             message.setSender(sender.get());
             message.setSentDate(sentDate);
+            message.setAttachments(attachments);
 
             messageRepo.save(message);
             notifier.sendNotifications(chat.get().getChatId(), "/queue/message/create", getMemberIds(chat.get()));

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.util.UUID;
 
 @Entity
@@ -22,16 +23,18 @@ public class User {
     private UUID userId;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name="role", nullable = false)
     private Role role;
 
-    @Column(nullable = false, unique = true)
+    @Column(name="name", nullable = false, unique = true)
+    @Size(max = 500, message = "User name is too long")
     private String name;
 
-    @Column(nullable = false, unique = true)
+    @Column(name="email", nullable = false, unique = true)
+    @Size(max = 500, message = "User email is too long")
     private String email;
 
-    @Column(nullable = false)
+    @Column(name="password", nullable = false)
     @JsonIgnore
     private String password;
 }

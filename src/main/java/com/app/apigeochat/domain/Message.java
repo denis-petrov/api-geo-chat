@@ -4,10 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.util.Date;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -30,9 +31,16 @@ public class Message {
     @JoinColumn(name = "chat_id")
     private Chat chat;
 
-    @Column(nullable = false)
+    @Column(name="message", nullable = false)
+    @Size(max = 1000, message = "Message is too long")
     private String message;
 
     @Column(name="sent_date", nullable = false)
     private Date sentDate;
+
+    @ElementCollection
+    @CollectionTable(name = "message_attachment", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "attachment")
+    @Size(max = 20, message = "Too big number of attachments")
+    private Set<String> attachments;
 }

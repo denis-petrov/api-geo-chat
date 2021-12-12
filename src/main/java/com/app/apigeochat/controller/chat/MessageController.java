@@ -6,10 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -27,10 +24,15 @@ public class MessageController {
             @RequestParam("senderId") String senderId,
             @RequestParam("chatId") String chatId,
             @RequestParam("message") String message,
-            @RequestParam("timestamp") Long timestamp
+            @RequestParam("timestamp") Long timestamp,
+            @RequestParam(value="attachments[]") String[] attachments
     ) {
         Optional<UUID> createdMessageUuid = messageService.create(
-                UUID.fromString(senderId), UUID.fromString(chatId), message, new Date(timestamp));
+                UUID.fromString(senderId),
+                UUID.fromString(chatId),
+                message,
+                new Date(timestamp),
+                Set.of(attachments));
         return createdMessageUuid
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
