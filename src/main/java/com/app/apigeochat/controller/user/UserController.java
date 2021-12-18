@@ -1,6 +1,7 @@
 package com.app.apigeochat.controller.user;
 
 import com.app.apigeochat.domain.User;
+import com.app.apigeochat.dto.UserAuthDto;
 import com.app.apigeochat.dto.UserProvidingDto;
 import com.app.apigeochat.service.chat.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,39 +34,21 @@ public class UserController {
     }
 
     @PostMapping("/authByEmail")
-    public ResponseEntity<User> authByEmail(
+    public ResponseEntity<UserAuthDto> authByEmail(
             @RequestParam("email") String email,
             @RequestParam("password") String password
     ) {
         Optional<User> user = userService.getByEmail(email);
-
-        if (user.isPresent()) {
-            if (Objects.equals(user.get().getPassword(), password)) {
-                return ResponseEntity.ok(user.get());
-            } else {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-            }
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+        return generateUserAuthResponse(user, password);
     }
 
     @PostMapping("/authByName")
-    public ResponseEntity<User> authByName(
+    public ResponseEntity<UserAuthDto> authByName(
             @RequestParam("name") String name,
             @RequestParam("password") String password
     ) {
         Optional<User> user = userService.getByName(name);
-
-        if (user.isPresent()) {
-            if (Objects.equals(user.get().getPassword(), password)) {
-                return ResponseEntity.ok(user.get());
-            } else {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-            }
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+        return generateUserAuthResponse(user, password);
     }
 
     @GetMapping("/getById")
@@ -135,5 +118,17 @@ public class UserController {
                     return ResponseEntity.ok(friends);
                 })
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    private ResponseEntity<UserAuthDto> generateUserAuthResponse(Optional<User> user, String password) {
+        if (user.isPresent()) {
+            if (Objects.equals(user.get().getPassword(), password)) {
+                return ResponseEntity.ok(new UserAuthDto(user.get()));
+            } else {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
     }
 }
