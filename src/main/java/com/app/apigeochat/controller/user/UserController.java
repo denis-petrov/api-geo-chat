@@ -124,11 +124,16 @@ public class UserController {
     }
 
     @GetMapping("/friends")
-    public ResponseEntity<Set<User>> getAllFriends(@RequestParam("userId") String userId) {
+    public ResponseEntity<List<UserProvidingDto>> getAllFriends(@RequestParam("userId") String userId) {
         Optional<User> optionalUser = userService.getById(UUID.fromString(userId));
 
         return optionalUser
-                .map(user -> ResponseEntity.ok(user.getFriends()))
+                .map(user -> {
+                    List<UserProvidingDto> friends = user.getFriends()
+                            .stream().map(UserProvidingDto::new)
+                            .collect(Collectors.toList());
+                    return ResponseEntity.ok(friends);
+                })
                 .orElse(ResponseEntity.notFound().build());
     }
 }
