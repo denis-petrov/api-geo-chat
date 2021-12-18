@@ -1,16 +1,12 @@
 package com.app.apigeochat.controller.user;
 
-import com.app.apigeochat.domain.Chat;
 import com.app.apigeochat.domain.User;
-import com.app.apigeochat.dto.ChatProvidingDto;
 import com.app.apigeochat.dto.UserProvidingDto;
 import com.app.apigeochat.service.chat.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.ResourceAccessException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -44,7 +40,7 @@ public class UserController {
         Optional<User> user = userService.getByEmail(email);
 
         if (user.isPresent()) {
-            if(Objects.equals(user.get().getPassword(), password)) {
+            if (Objects.equals(user.get().getPassword(), password)) {
                 return ResponseEntity.ok(user.get());
             } else {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -62,7 +58,7 @@ public class UserController {
         Optional<User> user = userService.getByName(name);
 
         if (user.isPresent()) {
-            if(Objects.equals(user.get().getPassword(), password)) {
+            if (Objects.equals(user.get().getPassword(), password)) {
                 return ResponseEntity.ok(user.get());
             } else {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -95,5 +91,35 @@ public class UserController {
     public ResponseEntity<Void> remove(@RequestParam("userId") String userId) {
         userService.remove(UUID.fromString(userId));
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/addFriend")
+    public ResponseEntity<Void> addFriend(
+            @RequestParam("userId") String userId,
+            @RequestParam("friendId") String friendId
+    ) {
+        if (userService.addFriend(
+                UUID.fromString(userId),
+                UUID.fromString(friendId))
+        ) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PostMapping("/removeFriend")
+    public ResponseEntity<Void> removeFriend(
+            @RequestParam("userId") String userId,
+            @RequestParam("friendId") String friendId
+    ) {
+        if (userService.removeFriend(
+                UUID.fromString(userId),
+                UUID.fromString(friendId))
+        ) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 }
