@@ -122,4 +122,13 @@ public class UserController {
             return ResponseEntity.internalServerError().build();
         }
     }
+
+    @GetMapping("/friends")
+    public ResponseEntity<Set<User>> getAllFriends(@RequestParam("userId") String userId) {
+        Optional<User> optionalUser = userService.getById(UUID.fromString(userId));
+
+        return optionalUser
+                .map(user -> ResponseEntity.ok(user.getFriends()))
+                .orElse(ResponseEntity.notFound().build());
+    }
 }
