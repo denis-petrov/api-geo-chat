@@ -18,6 +18,8 @@ import java.util.UUID;
 @Setter
 @Table
 public class Chat {
+    public static final int INVITE_STRING_LENGTH = 32;
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "chat_id", insertable = false, updatable = false, nullable = false)
@@ -29,4 +31,7 @@ public class Chat {
     @Column(name = "name", nullable = false)
     @Size(max = 500, message = "Chat name is too long")
     private String name;
+
+    @Column(name = "invite", nullable = false, unique = true)
+    private String invite;
 }

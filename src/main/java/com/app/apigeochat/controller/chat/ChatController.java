@@ -50,6 +50,13 @@ public class ChatController {
         );
     }
 
+    @GetMapping("/getInvite")
+    public ResponseEntity<String> getInvite(@RequestParam("chatId") String chatId) {
+        return chatService.getChat(UUID.fromString(chatId))
+                .map(chat -> ResponseEntity.ok(chat.getInvite()))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @PostMapping("/updateName")
     public ResponseEntity<Void> updateName(
             @RequestParam("chatId") String chatId,
