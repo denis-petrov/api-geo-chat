@@ -1,6 +1,7 @@
 package com.app.apigeochat.controller.chat;
 
-import com.app.apigeochat.dto.MessageProvidingDto;
+import com.app.apigeochat.controller.map.MarkerController;
+import com.app.apigeochat.dto.chat.MessageProvidingDto;
 import com.app.apigeochat.service.chat.MessageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +32,7 @@ public class MessageController {
             @RequestParam("chatId") String chatId,
             @RequestParam("message") String message,
             @RequestParam("timestamp") Long timestamp,
-            @RequestParam(value="attachments[]") String[] attachments
+            @RequestParam(value = "attachments[]") String[] attachments
     ) {
         Optional<UUID> createdMessageUuid = messageService.create(
                 UUID.fromString(senderId),
@@ -64,9 +65,11 @@ public class MessageController {
             @RequestParam("numberOfMessages") int numberOfMessages,
             @RequestParam("timestamp") Long timestamp
     ) {
-        List<MessageProvidingDto> messages = messageService
+        final var messages = messageService
                 .getBefore(UUID.fromString(chatId), numberOfMessages, new Date(timestamp))
-                .stream().map(MessageProvidingDto::new).collect(Collectors.toList());
+                .stream()
+                .map(MessageProvidingDto::new)
+                .collect(Collectors.toList());
         return ResponseEntity.ok(messages);
     }
 

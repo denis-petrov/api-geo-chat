@@ -36,7 +36,7 @@ public class ChatController {
 
     @GetMapping("/get")
     public ResponseEntity<ChatProvidingDto> getChat(@RequestParam("chatId") String chatId) {
-        Optional<Chat> chat = chatService.getChat(UUID.fromString(chatId));
+        final var chat = chatService.getChat(UUID.fromString(chatId));
         return chat.map(value -> ResponseEntity.ok(new ChatProvidingDto(value)))
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -55,11 +55,9 @@ public class ChatController {
             @RequestParam("chatId") String chatId,
             @RequestParam("name") String newName
     ) {
-        if (chatService.updateName(UUID.fromString(chatId), newName)) {
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.internalServerError().build();
-        }
+        return chatService.updateName(UUID.fromString(chatId), newName)
+                ? ResponseEntity.ok().build()
+                : ResponseEntity.internalServerError().build();
     }
 
     @PostMapping("/remove")
@@ -74,11 +72,9 @@ public class ChatController {
             @RequestParam("chatId") String chatId,
             @RequestParam("userId") String userId
     ) {
-        if (chatService.addMember(UUID.fromString(chatId), UUID.fromString(userId))) {
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.internalServerError().build();
-        }
+        return chatService.addMember(UUID.fromString(chatId), UUID.fromString(userId))
+                ? ResponseEntity.ok().build()
+                : ResponseEntity.internalServerError().build();
     }
 
     @PostMapping("/removeMember")
@@ -86,10 +82,8 @@ public class ChatController {
             @RequestParam("chatId") String chatId,
             @RequestParam("userId") String userId
     ) {
-        if (chatService.removeMember(UUID.fromString(chatId), UUID.fromString(userId))) {
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.internalServerError().build();
-        }
+        return chatService.removeMember(UUID.fromString(chatId), UUID.fromString(userId))
+                ? ResponseEntity.ok().build()
+                : ResponseEntity.internalServerError().build();
     }
 }

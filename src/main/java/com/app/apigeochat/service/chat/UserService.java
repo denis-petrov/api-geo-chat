@@ -1,8 +1,8 @@
 package com.app.apigeochat.service.chat;
 
-import com.app.apigeochat.domain.Role;
-import com.app.apigeochat.domain.User;
-import com.app.apigeochat.repository.UserRepository;
+import com.app.apigeochat.domain.user.Role;
+import com.app.apigeochat.domain.user.User;
+import com.app.apigeochat.repository.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,48 +38,42 @@ public class UserService {
     }
 
     public Optional<UUID> create(String username, String email, String password) {
-        if (userRepo.existsByName(username) || userRepo.existsByEmail(email)) {
-            return Optional.empty();
-        } else {
-            User user = new User();
-            user.setName(username);
-            user.setEmail(email);
-            user.setPassword(password);
-            user.setRole(Role.User);
-            return Optional.of(userRepo.save(user).getUserId());
-        }
+        if (userRepo.existsByName(username) || userRepo.existsByEmail(email)) return Optional.empty();
+
+        User user = new User();
+        user.setName(username);
+        user.setEmail(email);
+        user.setPassword(password);
+        user.setRole(Role.User);
+        return Optional.of(userRepo.save(user).getUserId());
     }
 
     public boolean addFriend(UUID userId, UUID friendId) {
-        if (userRepo.existsById(userId) && userRepo.existsById(friendId)) {
-            User user = userRepo.getById(userId);
-            User friend = userRepo.getById(friendId);
-            user.getFriends().add(friend);
-            friend.getFriends().add(user);
+        if (!userRepo.existsById(userId) || !userRepo.existsById(friendId)) return false;
 
-            userRepo.save(user);
-            userRepo.save(friend);
+        User user = userRepo.getById(userId);
+        User friend = userRepo.getById(friendId);
+        user.getFriends().add(friend);
+        friend.getFriends().add(user);
 
-            return true;
-        } else {
-            return false;
-        }
+        userRepo.save(user);
+        userRepo.save(friend);
+
+        return true;
     }
 
     public boolean removeFriend(UUID userId, UUID friendId) {
-        if (userRepo.existsById(userId) && userRepo.existsById(friendId)) {
-            User user = userRepo.getById(userId);
-            User friend = userRepo.getById(friendId);
-            user.getFriends().remove(friend);
-            friend.getFriends().remove(user);
+        if (!userRepo.existsById(userId) || !userRepo.existsById(friendId)) return false;
 
-            userRepo.save(user);
-            userRepo.save(friend);
+        User user = userRepo.getById(userId);
+        User friend = userRepo.getById(friendId);
+        user.getFriends().remove(friend);
+        friend.getFriends().remove(user);
 
-            return true;
-        } else {
-            return false;
-        }
+        userRepo.save(user);
+        userRepo.save(friend);
+
+        return true;
     }
 
     public void remove(UUID id) {

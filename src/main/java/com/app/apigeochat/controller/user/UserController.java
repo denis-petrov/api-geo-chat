@@ -48,7 +48,7 @@ public class UserController {
             @RequestParam("email") String email,
             @RequestParam("password") String password
     ) {
-        Optional<User> user = userService.getByEmail(email);
+        final var user = userService.getByEmail(email);
         return generateUserAuthResponse(user, password);
     }
 
@@ -57,13 +57,13 @@ public class UserController {
             @RequestParam("name") String name,
             @RequestParam("password") String password
     ) {
-        Optional<User> user = userService.getByName(name);
+        final var user = userService.getByName(name);
         return generateUserAuthResponse(user, password);
     }
 
     @GetMapping("/getById")
     public ResponseEntity<UserProvidingDto> getById(@RequestParam("userId") String userId) {
-        Optional<User> user = userService.getById(UUID.fromString(userId));
+        final var user = userService.getById(UUID.fromString(userId));
         return user.map(value -> ResponseEntity.ok(new UserProvidingDto(value)))
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -91,14 +91,9 @@ public class UserController {
             @RequestParam("userId") String userId,
             @RequestParam("friendId") String friendId
     ) {
-        if (userService.addFriend(
-                UUID.fromString(userId),
-                UUID.fromString(friendId))
-        ) {
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.internalServerError().build();
-        }
+        return userService.addFriend(UUID.fromString(userId), UUID.fromString(friendId))
+                ? ResponseEntity.ok().build()
+                : ResponseEntity.internalServerError().build();
     }
 
     @PostMapping("/removeFriend")
@@ -106,19 +101,14 @@ public class UserController {
             @RequestParam("userId") String userId,
             @RequestParam("friendId") String friendId
     ) {
-        if (userService.removeFriend(
-                UUID.fromString(userId),
-                UUID.fromString(friendId))
-        ) {
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.internalServerError().build();
-        }
+        return userService.removeFriend(UUID.fromString(userId), UUID.fromString(friendId))
+                ? ResponseEntity.ok().build()
+                : ResponseEntity.internalServerError().build();
     }
 
     @GetMapping("/friends")
     public ResponseEntity<List<UserProvidingDto>> getAllFriends(@RequestParam("userId") String userId) {
-        Optional<User> optionalUser = userService.getById(UUID.fromString(userId));
+        final var optionalUser = userService.getById(UUID.fromString(userId));
 
         return optionalUser
                 .map(user -> {
@@ -131,14 +121,9 @@ public class UserController {
     }
 
     private ResponseEntity<UserAuthDto> generateUserAuthResponse(Optional<User> user, String password) {
-        if (user.isPresent()) {
-            if (Objects.equals(user.get().getPassword(), password)) {
-                return ResponseEntity.ok(new UserAuthDto(user.get()));
-            } else {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-            }
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+        if (user.isEmpty()) return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        return Objects.equals(user.get().getPassword(), password)
+                ? ResponseEntity.ok(new UserAuthDto(user.get()))
+                : ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 }

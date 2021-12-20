@@ -30,13 +30,13 @@ public class ChatService {
     }
 
     public List<Chat> getAllForUser(UUID userId) {
-        User user = new User();
+        var user = new User();
         user.setUserId(userId);
         return chatRepo.findByMembersContains(user);
     }
 
     public boolean updateName(UUID chatId, String newName) {
-        Optional<Chat> optionalChat = chatRepo.findById(chatId);
+        var optionalChat = chatRepo.findById(chatId);
         optionalChat.ifPresent(chat -> {
             chat.setName(newName);
             chatRepo.save(chat);
@@ -50,25 +50,24 @@ public class ChatService {
     }
 
     public boolean addMember(UUID chatId, UUID userId) {
-        Optional<Chat> chat = chatRepo.findById(chatId);
-        Optional<User> user = userRepo.findById(userId);
-        if (chat.isPresent() && user.isPresent()) {
-            chat.get().getMembers().add(user.get());
-            return true;
-        } else {
+        var chat = chatRepo.findById(chatId);
+        var user = userRepo.findById(userId);
+        if (chat.isEmpty() || user.isEmpty())
             return false;
-        }
+
+        chat.get().getMembers().add(user.get());
+        return true;
     }
 
     public boolean removeMember(UUID chatId, UUID userId) {
-        Optional<Chat> optionalChat = chatRepo.findById(chatId);
+        var optionalChat = chatRepo.findById(chatId);
         optionalChat.ifPresent(chat ->
                 chat.getMembers().removeIf(user -> user.getUserId() == userId));
         return optionalChat.isPresent();
     }
 
     public UUID createChat(String name) {
-        Chat chat = new Chat();
+        var chat = new Chat();
         chat.setName(name);
         chat.setChatId(null);
         return chatRepo.save(chat).getChatId();
