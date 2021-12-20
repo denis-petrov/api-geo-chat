@@ -1,6 +1,6 @@
-package com.app.apigeochat.repository;
+package com.app.apigeochat.repository.user;
 
-import com.app.apigeochat.domain.User;
+import com.app.apigeochat.domain.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;

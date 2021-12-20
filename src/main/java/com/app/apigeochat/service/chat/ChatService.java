@@ -1,6 +1,6 @@
 package com.app.apigeochat.service.chat;
 
-import com.app.apigeochat.domain.Chat;
+import com.app.apigeochat.domain.chat.Chat;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

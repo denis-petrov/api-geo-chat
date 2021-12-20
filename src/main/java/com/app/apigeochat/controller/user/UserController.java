@@ -1,6 +1,6 @@
 package com.app.apigeochat.controller.user;
 
-import com.app.apigeochat.domain.User;
+import com.app.apigeochat.domain.user.User;
 import com.app.apigeochat.dto.UserProvidingDto;
 import com.app.apigeochat.service.chat.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

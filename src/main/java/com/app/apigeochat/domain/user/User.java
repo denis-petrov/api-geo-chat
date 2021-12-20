@@ -1,4 +1,4 @@
-package com.app.apigeochat.domain;
+package com.app.apigeochat.domain.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;

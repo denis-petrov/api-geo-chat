@@ -1,7 +1,6 @@
 package com.app.apigeochat.controller.chat;
 
-import com.app.apigeochat.domain.Chat;
-import com.app.apigeochat.dto.ChatProvidingDto;
+import com.app.apigeochat.dto.chat.ChatProvidingDto;
 import com.app.apigeochat.service.chat.ChatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

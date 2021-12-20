@@ -1,10 +1,10 @@
-package com.app.apigeochat.domain;
+package com.app.apigeochat.domain.chat;
 
+import com.app.apigeochat.domain.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.util.Date;

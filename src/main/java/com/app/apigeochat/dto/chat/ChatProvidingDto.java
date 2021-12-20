@@ -1,7 +1,7 @@
-package com.app.apigeochat.dto;
+package com.app.apigeochat.dto.chat;
 
-import com.app.apigeochat.domain.Chat;
-import com.app.apigeochat.domain.User;
+import com.app.apigeochat.domain.chat.Chat;
+import com.app.apigeochat.domain.user.User;
 import lombok.Getter;
 import lombok.Setter;
 
