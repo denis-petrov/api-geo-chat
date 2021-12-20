@@ -1,11 +1,11 @@
 package com.app.apigeochat.service.chat.impl;
 
-import com.app.apigeochat.domain.Chat;
-import com.app.apigeochat.domain.Message;
-import com.app.apigeochat.domain.User;
-import com.app.apigeochat.repository.ChatRepository;
-import com.app.apigeochat.repository.MessageRepository;
-import com.app.apigeochat.repository.UserRepository;
+import com.app.apigeochat.domain.chat.Chat;
+import com.app.apigeochat.domain.chat.Message;
+import com.app.apigeochat.domain.user.User;
+import com.app.apigeochat.repository.chat.ChatRepository;
+import com.app.apigeochat.repository.chat.MessageRepository;
+import com.app.apigeochat.repository.user.UserRepository;
 import com.app.apigeochat.service.chat.MessageService;
 import com.app.apigeochat.service.chat.notification.Notifier;
 import org.springframework.beans.factory.annotation.Autowired;

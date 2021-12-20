@@ -1,6 +1,6 @@
 package com.app.apigeochat.controller.chat;
 
-import com.app.apigeochat.dto.MessageProvidingDto;
+import com.app.apigeochat.dto.chat.MessageProvidingDto;
 import com.app.apigeochat.service.chat.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -36,7 +36,8 @@ public class MessageController {
             @RequestParam("numberOfMessages") int numberOfMessages
     ) {
         return messageService.getLast(UUID.fromString(chatId), numberOfMessages).stream()
-                .map(MessageProvidingDto::new).collect(Collectors.toList());
+                .map(MessageProvidingDto::new)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/getBefore")

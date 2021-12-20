@@ -1,14 +1,10 @@
-package com.app.apigeochat.repository;
+package com.app.apigeochat.repository.chat;
 
-import com.app.apigeochat.domain.Chat;
-import com.app.apigeochat.domain.Message;
+import com.app.apigeochat.domain.chat.Chat;
+import com.app.apigeochat.domain.chat.Message;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.jpa.repository.Temporal;
-import org.springframework.data.repository.query.Param;
 
-import javax.persistence.TemporalType;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;

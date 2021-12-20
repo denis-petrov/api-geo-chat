@@ -1,8 +1,8 @@
 package com.app.apigeochat.service.chat.impl;
 
-import com.app.apigeochat.domain.Role;
-import com.app.apigeochat.domain.User;
-import com.app.apigeochat.repository.UserRepository;
+import com.app.apigeochat.domain.user.Role;
+import com.app.apigeochat.domain.user.User;
+import com.app.apigeochat.repository.user.UserRepository;
 import com.app.apigeochat.service.chat.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
