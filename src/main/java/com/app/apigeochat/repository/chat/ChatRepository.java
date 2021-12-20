@@ -1,7 +1,7 @@
-package com.app.apigeochat.repository;
+package com.app.apigeochat.repository.chat;
 
-import com.app.apigeochat.domain.Chat;
-import com.app.apigeochat.domain.User;
+import com.app.apigeochat.domain.chat.Chat;
+import com.app.apigeochat.domain.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

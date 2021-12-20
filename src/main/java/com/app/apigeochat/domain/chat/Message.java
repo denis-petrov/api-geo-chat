@@ -1,5 +1,6 @@
-package com.app.apigeochat.domain;
+package com.app.apigeochat.domain.chat;
 
+import com.app.apigeochat.domain.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

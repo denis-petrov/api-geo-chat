@@ -1,6 +1,6 @@
-package com.app.apigeochat.dto;
+package com.app.apigeochat.dto.chat;
 
-import com.app.apigeochat.domain.Message;
+import com.app.apigeochat.domain.chat.Message;
 import lombok.Getter;
 import lombok.Setter;
 
