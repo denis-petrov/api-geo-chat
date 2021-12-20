@@ -30,9 +30,7 @@ public class MarkerController {
     public ResponseEntity<List<Marker>> markersByPosition(
             @RequestParam("senderId") String senderId
     ) {
-        System.out.println("senderId: " + senderId);
         final var markers = mapService.getMarkers(UUID.fromString(senderId));
-        System.out.println(markers);
         return ResponseEntity.ok(markers);
     }
 

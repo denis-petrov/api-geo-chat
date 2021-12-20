@@ -1,26 +1,75 @@
 package com.app.apigeochat.service.chat;
 
 import com.app.apigeochat.domain.chat.Chat;
+import com.app.apigeochat.domain.user.User;
+import com.app.apigeochat.repository.chat.ChatRepository;
+import com.app.apigeochat.repository.user.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+
 
 @Transactional
 @Service
-public interface ChatService {
-    Chat getChat(UUID chatId);
+public class ChatService {
+    private final ChatRepository chatRepo;
+    private final UserRepository userRepo;
 
-    UUID createChat(String name);
+    @Autowired
+    public ChatService(ChatRepository chatRepo, UserRepository userRepo) {
+        this.chatRepo = chatRepo;
+        this.userRepo = userRepo;
+    }
 
-    List<Chat> getAllForUser(UUID userId);
+    public Optional<Chat> getChat(UUID chatId) {
+        return chatRepo.findById(chatId);
+    }
 
-    void updateName(UUID chatId, String newName);
+    public List<Chat> getAllForUser(UUID userId) {
+        var user = new User();
+        user.setUserId(userId);
+        return chatRepo.findByMembersContains(user);
+    }
 
-    void remove(UUID chatId);
+    public boolean updateName(UUID chatId, String newName) {
+        var optionalChat = chatRepo.findById(chatId);
+        optionalChat.ifPresent(chat -> {
+            chat.setName(newName);
+            chatRepo.save(chat);
+        });
 
-    void addMember(UUID chatId, UUID userId);
+        return optionalChat.isPresent();
+    }
 
-    void removeMember(UUID chatId, UUID userId);
+    public void remove(UUID chatId) {
+        chatRepo.deleteById(chatId);
+    }
+
+    public boolean addMember(UUID chatId, UUID userId) {
+        var chat = chatRepo.findById(chatId);
+        var user = userRepo.findById(userId);
+        if (chat.isEmpty() || user.isEmpty())
+            return false;
+
+        chat.get().getMembers().add(user.get());
+        return true;
+    }
+
+    public boolean removeMember(UUID chatId, UUID userId) {
+        var optionalChat = chatRepo.findById(chatId);
+        optionalChat.ifPresent(chat ->
+                chat.getMembers().removeIf(user -> user.getUserId() == userId));
+        return optionalChat.isPresent();
+    }
+
+    public UUID createChat(String name) {
+        var chat = new Chat();
+        chat.setName(name);
+        chat.setChatId(null);
+        return chatRepo.save(chat).getChatId();
+    }
 }

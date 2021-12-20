@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.util.Set;
 import java.util.UUID;
 
@@ -23,9 +24,9 @@ public class Chat {
     private UUID chatId;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-    @JoinTable(joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "chat_id"))
     private Set<User> members;
 
-    @Column(nullable = false)
+    @Column(name = "name", nullable = false)
+    @Size(max = 500, message = "Chat name is too long")
     private String name;
 }

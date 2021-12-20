@@ -7,6 +7,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -18,20 +22,25 @@ import java.util.UUID;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name="user_id", insertable = false, updatable = false, nullable = false)
+    @Column(name = "user_id", insertable = false, updatable = false, nullable = false)
     private UUID userId;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "role", nullable = false)
     private Role role;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "name", nullable = false, unique = true)
+    @Size(max = 500, message = "User name is too long")
     private String name;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "email", nullable = false, unique = true)
+    @Size(max = 500, message = "User email is too long")
     private String email;
 
-    @Column(nullable = false)
+    @OneToMany(fetch=FetchType.LAZY, cascade=CascadeType.PERSIST)
+    private Set<User> friends = new HashSet<>();
+
+    @Column(name = "password", nullable = false)
     @JsonIgnore
     private String password;
 }
