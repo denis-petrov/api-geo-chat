@@ -1,13 +1,15 @@
 package com.app.apigeochat.controller.chat;
 
+import com.app.apigeochat.controller.map.MarkerController;
 import com.app.apigeochat.dto.chat.ChatProvidingDto;
 import com.app.apigeochat.service.chat.ChatService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -16,6 +18,10 @@ import java.util.stream.Collectors;
 public class ChatController {
     private final ChatService chatService;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(MarkerController.class);
+    private static final String CREATE_CHAT_LOG_MESSAGE = "New chat was created: {}";
+    private static final String REMOVE_CHAT_LOG_MESSAGE = "Chat was removed: {}";
+
     @Autowired
     public ChatController(ChatService chatService) {
         this.chatService = chatService;
@@ -23,7 +29,9 @@ public class ChatController {
 
     @PostMapping("/create")
     public ResponseEntity<UUID> createChat(@RequestParam("name") String name) {
-        return ResponseEntity.ok(chatService.createChat(name));
+        UUID chatId = chatService.createChat(name);
+        LOGGER.info(CREATE_CHAT_LOG_MESSAGE, chatId);
+        return ResponseEntity.ok(chatId);
     }
 
     @GetMapping("/get")
@@ -57,6 +65,7 @@ public class ChatController {
     @PostMapping("/remove")
     public ResponseEntity<Void> remove(@RequestParam("chatId") String chatId) {
         chatService.remove(UUID.fromString(chatId));
+        LOGGER.info(REMOVE_CHAT_LOG_MESSAGE, chatId);
         return ResponseEntity.ok().build();
     }
 

@@ -2,6 +2,8 @@ package com.app.apigeochat.controller.chat;
 
 import com.app.apigeochat.dto.MessageProvidingDto;
 import com.app.apigeochat.service.chat.MessageService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +15,10 @@ import java.util.stream.Collectors;
 @RequestMapping("/message")
 public class MessageController {
     public final MessageService messageService;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MarkerController.class);
+    private static final String CREATE_MESSAGE_LOG_MESSAGE = "New message was created: {}";
+    private static final String REMOVE_MESSAGE_LOG_MESSAGE = "Message was removed: {}";
 
     @Autowired
     public MessageController(MessageService messageService) {
@@ -34,7 +40,10 @@ public class MessageController {
                 new Date(timestamp),
                 Set.of(attachments));
         return createdMessageUuid
-                .map(ResponseEntity::ok)
+                .map(messageId -> {
+                    LOGGER.info(CREATE_MESSAGE_LOG_MESSAGE, messageId);
+                    return ResponseEntity.ok(messageId);
+                })
                 .orElse(ResponseEntity.notFound().build());
     }
 
@@ -64,6 +73,7 @@ public class MessageController {
     @PostMapping("/remove")
     public ResponseEntity<Void> remove(@RequestParam("messageId") String messageId) {
         messageService.remove(UUID.fromString(messageId));
+        LOGGER.info(REMOVE_MESSAGE_LOG_MESSAGE, messageId);
         return ResponseEntity.ok().build();
     }
 }

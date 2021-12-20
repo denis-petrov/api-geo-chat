@@ -1,17 +1,17 @@
 package com.app.apigeochat.service.chat;
 
-import com.app.apigeochat.domain.Chat;
-import com.app.apigeochat.domain.User;
-import com.app.apigeochat.repository.ChatRepository;
-import com.app.apigeochat.repository.UserRepository;
+import com.app.apigeochat.domain.chat.Chat;
+import com.app.apigeochat.domain.user.User;
+import com.app.apigeochat.repository.chat.ChatRepository;
+import com.app.apigeochat.repository.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
 
 @Transactional
 @Service
