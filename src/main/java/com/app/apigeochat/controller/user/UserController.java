@@ -4,6 +4,7 @@ import com.app.apigeochat.controller.map.MarkerController;
 import com.app.apigeochat.domain.user.User;
 import com.app.apigeochat.dto.UserAuthDto;
 import com.app.apigeochat.dto.UserProvidingDto;
+import com.app.apigeochat.service.chat.FriendService;
 import com.app.apigeochat.service.chat.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,14 +20,16 @@ import java.util.stream.Collectors;
 @RequestMapping("/user")
 public class UserController {
     private final UserService userService;
+    private final FriendService friendService;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MarkerController.class);
     private static final String CREATE_USER_LOG_MESSAGE = "New user was created: {}";
     private static final String REMOVE_USER_LOG_MESSAGE = "User was removed: {}";
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, FriendService friendService) {
         this.userService = userService;
+        this.friendService = friendService;
     }
 
     @PostMapping("/create")
@@ -91,11 +94,11 @@ public class UserController {
             @RequestParam("invitedUserId") String invitedUserId,
             @RequestParam("invitingUserId") String invitingUserId
     ) {
-        if (userService.isFriends(UUID.fromString(invitedUserId), UUID.fromString(invitingUserId))) {
+        if (friendService.isFriends(UUID.fromString(invitedUserId), UUID.fromString(invitingUserId))) {
             return ResponseEntity.internalServerError().build();
         }
 
-        return userService.inviteToFriends(UUID.fromString(invitedUserId), UUID.fromString(invitingUserId))
+        return friendService.inviteToFriends(UUID.fromString(invitedUserId), UUID.fromString(invitingUserId))
                 ? ResponseEntity.ok().build()
                 : ResponseEntity.internalServerError().build();
     }
@@ -105,7 +108,7 @@ public class UserController {
             @RequestParam("invitedUserId") String invitedUserId,
             @RequestParam("invitingUserId") String invitingUserId
     ) {
-        return userService.acceptInvite(UUID.fromString(invitedUserId), UUID.fromString(invitingUserId))
+        return friendService.acceptInvite(UUID.fromString(invitedUserId), UUID.fromString(invitingUserId))
                 ? ResponseEntity.ok().build()
                 : ResponseEntity.internalServerError().build();
     }
@@ -115,7 +118,7 @@ public class UserController {
             @RequestParam("invitedUserId") String invitedUserId,
             @RequestParam("invitingUserId") String invitingUserId
     ) {
-        return userService.rejectInvite(UUID.fromString(invitedUserId), UUID.fromString(invitingUserId))
+        return friendService.rejectInvite(UUID.fromString(invitedUserId), UUID.fromString(invitingUserId))
                 ? ResponseEntity.ok().build()
                 : ResponseEntity.internalServerError().build();
     }
@@ -125,7 +128,7 @@ public class UserController {
             @RequestParam("userId") String userId,
             @RequestParam("friendId") String friendId
     ) {
-        return userService.removeFriend(UUID.fromString(userId), UUID.fromString(friendId))
+        return friendService.removeFriend(UUID.fromString(userId), UUID.fromString(friendId))
                 ? ResponseEntity.ok().build()
                 : ResponseEntity.internalServerError().build();
     }
