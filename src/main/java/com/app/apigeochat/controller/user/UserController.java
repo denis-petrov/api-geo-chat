@@ -86,12 +86,36 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/addFriend")
-    public ResponseEntity<Void> addFriend(
-            @RequestParam("userId") String userId,
-            @RequestParam("friendId") String friendId
+    @PostMapping("/inviteToFriends")
+    public ResponseEntity<Void> inviteToFriends(
+            @RequestParam("invitedUserId") String invitedUserId,
+            @RequestParam("invitingUserId") String invitingUserId
     ) {
-        return userService.addFriend(UUID.fromString(userId), UUID.fromString(friendId))
+        if (userService.isFriends(UUID.fromString(invitedUserId), UUID.fromString(invitingUserId))) {
+            return ResponseEntity.internalServerError().build();
+        }
+
+        return userService.inviteToFriends(UUID.fromString(invitedUserId), UUID.fromString(invitingUserId))
+                ? ResponseEntity.ok().build()
+                : ResponseEntity.internalServerError().build();
+    }
+
+    @PostMapping("/acceptInvite")
+    public ResponseEntity<Void> acceptInvite(
+            @RequestParam("invitedUserId") String invitedUserId,
+            @RequestParam("invitingUserId") String invitingUserId
+    ) {
+        return userService.acceptInvite(UUID.fromString(invitedUserId), UUID.fromString(invitingUserId))
+                ? ResponseEntity.ok().build()
+                : ResponseEntity.internalServerError().build();
+    }
+
+    @PostMapping("/rejectInvite")
+    public ResponseEntity<Void> rejectInvite(
+            @RequestParam("invitedUserId") String invitedUserId,
+            @RequestParam("invitingUserId") String invitingUserId
+    ) {
+        return userService.rejectInvite(UUID.fromString(invitedUserId), UUID.fromString(invitingUserId))
                 ? ResponseEntity.ok().build()
                 : ResponseEntity.internalServerError().build();
     }
@@ -116,6 +140,20 @@ public class UserController {
                             .stream().map(UserProvidingDto::new)
                             .collect(Collectors.toList());
                     return ResponseEntity.ok(friends);
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/invites")
+    public ResponseEntity<List<UserProvidingDto>> getAllInvites(@RequestParam("userId") String  userId) {
+        final var optionalUser = userService.getById(UUID.fromString(userId));
+
+        return optionalUser
+                .map(user -> {
+                    List<UserProvidingDto> invites = user.getInvites()
+                            .stream().map(UserProvidingDto::new)
+                            .collect(Collectors.toList());
+                    return ResponseEntity.ok(invites);
                 })
                 .orElse(ResponseEntity.notFound().build());
     }

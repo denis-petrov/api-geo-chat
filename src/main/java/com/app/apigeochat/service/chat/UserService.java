@@ -48,16 +48,49 @@ public class UserService {
         return Optional.of(userRepo.save(user).getUserId());
     }
 
-    public boolean addFriend(UUID userId, UUID friendId) {
-        if (!userRepo.existsById(userId) || !userRepo.existsById(friendId)) return false;
+    public boolean isFriends(UUID firstUserId, UUID secondUserId) {
+        User firstUser = userRepo.getById(firstUserId);
+        User secondUser = userRepo.getById(secondUserId);
 
-        User user = userRepo.getById(userId);
-        User friend = userRepo.getById(friendId);
-        user.getFriends().add(friend);
-        friend.getFriends().add(user);
+        return firstUser.getFriends().contains(secondUser) ||
+                secondUser.getFriends().contains(firstUser);
+    }
 
-        userRepo.save(user);
-        userRepo.save(friend);
+    public boolean inviteToFriends(UUID invitedUserId, UUID invitingUserId) {
+        if (!userRepo.existsById(invitedUserId) || !userRepo.existsById(invitingUserId)) return false;
+
+        User invitedUser = userRepo.getById(invitedUserId);
+        User invitingUser = userRepo.getById(invitingUserId);
+        invitedUser.getInvites().add(invitingUser);
+
+        userRepo.save(invitedUser);
+
+        return true;
+    }
+
+    public boolean acceptInvite(UUID invitedUserId, UUID invitingUserId) {
+        if (!userRepo.existsById(invitedUserId) || !userRepo.existsById(invitingUserId)) return false;
+
+        User invitedUser = userRepo.getById(invitedUserId);
+        User invitingUser = userRepo.getById(invitingUserId);
+        invitingUser.getFriends().add(invitedUser);
+        invitedUser.getFriends().add(invitingUser);
+
+        invitedUser.getInvites().remove(invitingUser);
+
+        userRepo.save(invitedUser);
+        userRepo.save(invitingUser);
+
+        return true;
+    }
+
+    public boolean rejectInvite(UUID invitedUserId, UUID invitingUserId) {
+        if (!userRepo.existsById(invitedUserId) || !userRepo.existsById(invitingUserId)) return false;
+
+        User invitedUser = userRepo.getById(invitedUserId);
+        User invitingUser = userRepo.getById(invitingUserId);
+
+        invitedUser.getInvites().remove(invitingUser);
 
         return true;
     }
