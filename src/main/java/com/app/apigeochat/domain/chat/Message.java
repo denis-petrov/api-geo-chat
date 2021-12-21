@@ -40,7 +40,7 @@ public class Message {
     private Date sentDate;
 
     @ElementCollection
-    @CollectionTable(name = "message_attachment", joinColumns = @JoinColumn(name = "user_id"))
+    @CollectionTable(name = "message_attachment", joinColumns = @JoinColumn(name = "message_id"))
     @Column(name = "attachment")
     @Size(max = 20, message = "Too big number of attachments")
     private Set<String> attachments;

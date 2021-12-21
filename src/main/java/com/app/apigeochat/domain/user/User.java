@@ -24,9 +24,11 @@ public class User {
     @Column(name = "user_id", insertable = false, updatable = false, nullable = false)
     private UUID userId;
 
-    @Enumerated(EnumType.STRING)
+    @ElementCollection
+    @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "role", nullable = false)
-    private Role role;
+    @Enumerated(EnumType.STRING)
+    private Set<Role> roles;
 
     @Column(name = "name", nullable = false, unique = true)
     @Size(max = 500, message = "User name is too long")
@@ -37,9 +39,19 @@ public class User {
     private String email;
 
     @OneToMany(fetch=FetchType.LAZY, cascade=CascadeType.PERSIST)
+    @JoinTable(
+            name = "friend",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "friend_user_id")
+    )
     private Set<User> friends = new HashSet<>();
 
     @OneToMany(fetch=FetchType.LAZY, cascade=CascadeType.PERSIST)
+    @JoinTable(
+            name = "invite",
+            joinColumns = @JoinColumn(name = "invited_user_id"),
+            inverseJoinColumns = @JoinColumn(name = "inviting_user_id")
+    )
     private Set<User> invites = new HashSet<>();
 
     @Column(name = "password", nullable = false)
