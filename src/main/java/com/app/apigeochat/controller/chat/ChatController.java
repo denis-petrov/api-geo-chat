@@ -50,6 +50,13 @@ public class ChatController {
         );
     }
 
+    @GetMapping("/getInvite")
+    public ResponseEntity<String> getInvite(@RequestParam("chatId") String chatId) {
+        return chatService.getChat(UUID.fromString(chatId))
+                .map(chat -> ResponseEntity.ok(chat.getInvite()))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @PostMapping("/updateName")
     public ResponseEntity<Void> updateName(
             @RequestParam("chatId") String chatId,
@@ -73,6 +80,16 @@ public class ChatController {
             @RequestParam("userId") String userId
     ) {
         return chatService.addMember(UUID.fromString(chatId), UUID.fromString(userId))
+                ? ResponseEntity.ok().build()
+                : ResponseEntity.internalServerError().build();
+    }
+
+    @PostMapping("/addMemberByInvite")
+    public ResponseEntity<Void> addByInvite(
+            @RequestParam("inviteToken") String inviteToken,
+            @RequestParam("userId") String userId
+    ) {
+        return chatService.addMemberByInvite(inviteToken, UUID.fromString(userId))
                 ? ResponseEntity.ok().build()
                 : ResponseEntity.internalServerError().build();
     }
