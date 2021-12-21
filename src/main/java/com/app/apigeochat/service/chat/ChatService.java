@@ -53,6 +53,18 @@ public class ChatService {
     public boolean addMember(UUID chatId, UUID userId) {
         var chat = chatRepo.findById(chatId);
         var user = userRepo.findById(userId);
+
+        if (chat.isEmpty() || user.isEmpty())
+            return false;
+
+        chat.get().getMembers().add(user.get());
+        return true;
+    }
+
+    public boolean addMemberByInvite(String invite, UUID userId) {
+        var chat = chatRepo.findFirstByInvite(invite);
+        var user = userRepo.findById(userId);
+
         if (chat.isEmpty() || user.isEmpty())
             return false;
 

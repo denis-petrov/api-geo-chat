@@ -84,6 +84,16 @@ public class ChatController {
                 : ResponseEntity.internalServerError().build();
     }
 
+    @PostMapping("/addMemberByInvite")
+    public ResponseEntity<Void> addByInvite(
+            @RequestParam("inviteToken") String inviteToken,
+            @RequestParam("userId") String userId
+    ) {
+        return chatService.addMemberByInvite(inviteToken, UUID.fromString(userId))
+                ? ResponseEntity.ok().build()
+                : ResponseEntity.internalServerError().build();
+    }
+
     @PostMapping("/removeMember")
     public ResponseEntity<Void> removeMember(
             @RequestParam("chatId") String chatId,
