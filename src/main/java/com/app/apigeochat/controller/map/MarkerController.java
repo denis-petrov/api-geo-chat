@@ -1,7 +1,9 @@
 package com.app.apigeochat.controller.map;
 
 import com.app.apigeochat.domain.map.Marker;
+import com.app.apigeochat.dto.chat.ChatProvidingDto;
 import com.app.apigeochat.dto.map.MarkerCreationDto;
+import com.app.apigeochat.dto.marker.MarkerProvidingDto;
 import com.app.apigeochat.service.map.MapService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/map/markers")
@@ -27,11 +30,14 @@ public class MarkerController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Marker>> markersByPosition(
+    public ResponseEntity<List<MarkerProvidingDto>> markersByPosition(
             @RequestParam("senderId") String senderId
     ) {
         final var markers = mapService.getMarkers(UUID.fromString(senderId));
-        return ResponseEntity.ok(markers);
+        final var markersDto = markers.stream()
+                .map(MarkerProvidingDto::new)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(markersDto);
     }
 
     @PostMapping
@@ -40,8 +46,8 @@ public class MarkerController {
                 markerCreationDto.getSenderId(),
                 markerCreationDto.getLat(),
                 markerCreationDto.getLng(),
-                markerCreationDto.getMarkerName(),
-                markerCreationDto.getMarkerDescription(),
+                markerCreationDto.getTitle(),
+                markerCreationDto.getDescription(),
                 markerCreationDto.getChatState()
         );
         LOGGER.info(NEW_MARKER_LOG, createdMarker.toString());

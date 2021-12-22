@@ -1,5 +1,6 @@
 package com.app.apigeochat.domain.map;
 
+import com.app.apigeochat.domain.chat.Chat;
 import com.app.apigeochat.domain.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -31,4 +32,14 @@ public class Marker {
 
     @Column(nullable = false)
     private Double lng;
+
+    @Column()
+    private String title;
+
+    @Column()
+    private String description;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "chat_id")
+    private Chat chat;
 }

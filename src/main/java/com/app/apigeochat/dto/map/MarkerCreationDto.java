@@ -15,7 +15,7 @@ public class MarkerCreationDto {
     private UUID senderId;
     private Double lat;
     private Double lng;
-    private String markerName;
-    private String markerDescription;
+    private String title;
+    private String description;
     private Integer chatState;
 }

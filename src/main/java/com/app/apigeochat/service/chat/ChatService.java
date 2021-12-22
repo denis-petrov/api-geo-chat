@@ -69,7 +69,6 @@ public class ChatService {
     public UUID createChat(String name) {
         var chat = new Chat();
         chat.setName(name);
-        chat.setChatId(null);
         return chatRepo.save(chat).getChatId();
     }
 }
