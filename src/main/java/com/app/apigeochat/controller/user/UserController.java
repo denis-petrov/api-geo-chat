@@ -4,6 +4,7 @@ import com.app.apigeochat.controller.map.MarkerController;
 import com.app.apigeochat.domain.user.User;
 import com.app.apigeochat.dto.UserAuthDto;
 import com.app.apigeochat.dto.UserProvidingDto;
+import com.app.apigeochat.service.chat.EncryptionService;
 import com.app.apigeochat.service.chat.FriendService;
 import com.app.apigeochat.service.chat.UserService;
 import org.slf4j.Logger;
@@ -21,15 +22,21 @@ import java.util.stream.Collectors;
 public class UserController {
     private final UserService userService;
     private final FriendService friendService;
+    private final EncryptionService encryptionService;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MarkerController.class);
     private static final String CREATE_USER_LOG_MESSAGE = "New user was created: {}";
     private static final String REMOVE_USER_LOG_MESSAGE = "User was removed: {}";
 
     @Autowired
-    public UserController(UserService userService, FriendService friendService) {
+    public UserController(
+            UserService userService,
+            FriendService friendService,
+            EncryptionService encryptionService
+    ) {
         this.userService = userService;
         this.friendService = friendService;
+        this.encryptionService = encryptionService;
     }
 
     @PostMapping("/create")
@@ -163,7 +170,7 @@ public class UserController {
 
     private ResponseEntity<UserAuthDto> generateUserAuthResponse(Optional<User> user, String password) {
         if (user.isEmpty()) return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        return Objects.equals(user.get().getPassword(), password)
+        return Objects.equals(user.get().getPassword(), encryptionService.encrypt(password))
                 ? ResponseEntity.ok(new UserAuthDto(user.get()))
                 : ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
