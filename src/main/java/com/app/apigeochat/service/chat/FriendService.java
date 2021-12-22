@@ -43,9 +43,9 @@ public class FriendService {
 
         User invitedUser = userRepo.getById(invitedUserId);
         User invitingUser = userRepo.getById(invitingUserId);
+
         invitingUser.getFriends().add(invitedUser);
         invitedUser.getFriends().add(invitingUser);
-
         invitedUser.getInvites().remove(invitingUser);
 
         userRepo.save(invitedUser);

@@ -25,7 +25,7 @@ public class Chat {
     @Column(name = "chat_id", insertable = false, updatable = false, nullable = false)
     private UUID chatId;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinTable(
             name = "chat_member",
             joinColumns = @JoinColumn(name = "chat_id"),

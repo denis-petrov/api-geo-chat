@@ -75,7 +75,10 @@ public class ChatService {
     public boolean removeMember(UUID chatId, UUID userId) {
         var optionalChat = chatRepo.findById(chatId);
         optionalChat.ifPresent(chat ->
-                chat.getMembers().removeIf(user -> user.getUserId() == userId));
+                {
+                    chat.getMembers().removeIf(user -> user.getUserId() == userId);
+                    chatRepo.save(chat);
+                });
         return optionalChat.isPresent();
     }
 

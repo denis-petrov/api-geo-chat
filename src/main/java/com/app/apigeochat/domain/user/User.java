@@ -38,7 +38,7 @@ public class User {
     @Size(max = 500, message = "User email is too long")
     private String email;
 
-    @OneToMany(fetch=FetchType.LAZY, cascade=CascadeType.PERSIST)
+    @OneToMany(fetch=FetchType.LAZY, cascade=CascadeType.REMOVE)
     @JoinTable(
             name = "friend",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -46,7 +46,7 @@ public class User {
     )
     private Set<User> friends = new HashSet<>();
 
-    @OneToMany(fetch=FetchType.LAZY, cascade=CascadeType.PERSIST)
+    @OneToMany(fetch=FetchType.LAZY, cascade=CascadeType.REMOVE)
     @JoinTable(
             name = "invite",
             joinColumns = @JoinColumn(name = "invited_user_id"),
