@@ -20,7 +20,9 @@ public class MarkerProvidingDto {
     public MarkerProvidingDto(Marker marker) {
         this.markerId = marker.getMarkerId();
         this.ownerId = marker.getOwner().getUserId();
-        this.chatId = marker.getChat().getChatId();
+        if (marker.getChat() != null) {
+            this.chatId = marker.getChat().getChatId();
+        }
         this.lat = marker.getLat();
         this.lng = marker.getLng();
         this.title = marker.getTitle();
