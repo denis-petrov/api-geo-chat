@@ -4,6 +4,7 @@ import com.app.apigeochat.domain.chat.Chat;
 import com.app.apigeochat.domain.user.User;
 import com.app.apigeochat.repository.chat.ChatRepository;
 import com.app.apigeochat.repository.user.UserRepository;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,6 +53,18 @@ public class ChatService {
     public boolean addMember(UUID chatId, UUID userId) {
         var chat = chatRepo.findById(chatId);
         var user = userRepo.findById(userId);
+
+        if (chat.isEmpty() || user.isEmpty())
+            return false;
+
+        chat.get().getMembers().add(user.get());
+        return true;
+    }
+
+    public boolean addMemberByInvite(String invite, UUID userId) {
+        var chat = chatRepo.findFirstByInvite(invite);
+        var user = userRepo.findById(userId);
+
         if (chat.isEmpty() || user.isEmpty())
             return false;
 
@@ -69,6 +82,7 @@ public class ChatService {
     public UUID createChat(String name) {
         var chat = new Chat();
         chat.setName(name);
+        chat.setInvite(RandomStringUtils.randomAlphanumeric(Chat.INVITE_STRING_LENGTH));
         return chatRepo.save(chat).getChatId();
     }
 }

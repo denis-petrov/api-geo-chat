@@ -48,34 +48,6 @@ public class UserService {
         return Optional.of(userRepo.save(user).getUserId());
     }
 
-    public boolean addFriend(UUID userId, UUID friendId) {
-        if (!userRepo.existsById(userId) || !userRepo.existsById(friendId)) return false;
-
-        User user = userRepo.getById(userId);
-        User friend = userRepo.getById(friendId);
-        user.getFriends().add(friend);
-        friend.getFriends().add(user);
-
-        userRepo.save(user);
-        userRepo.save(friend);
-
-        return true;
-    }
-
-    public boolean removeFriend(UUID userId, UUID friendId) {
-        if (!userRepo.existsById(userId) || !userRepo.existsById(friendId)) return false;
-
-        User user = userRepo.getById(userId);
-        User friend = userRepo.getById(friendId);
-        user.getFriends().remove(friend);
-        friend.getFriends().remove(user);
-
-        userRepo.save(user);
-        userRepo.save(friend);
-
-        return true;
-    }
-
     public void remove(UUID id) {
         userRepo.deleteById(id);
     }
