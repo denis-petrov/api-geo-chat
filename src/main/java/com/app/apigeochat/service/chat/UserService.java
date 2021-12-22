@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -44,7 +45,7 @@ public class UserService {
         user.setName(username);
         user.setEmail(email);
         user.setPassword(password);
-        user.setRole(Role.User);
+        user.setRoles(Collections.singleton(Role.User));
         return Optional.of(userRepo.save(user).getUserId());
     }
 

@@ -10,7 +10,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @SpringBootApplication
 @EnableWebSecurity
 public class ApiGeoChatApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(ApiGeoChatApplication.class, args);
     }
