@@ -8,7 +8,9 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.UUID;
 
 @Entity
@@ -26,7 +28,7 @@ public class Chat {
     private UUID chatId;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-    private Set<User> members;
+    private Set<User> members = new HashSet<>();
 
     @Column(name = "name", nullable = false)
     @Size(max = 500, message = "Chat name is too long")
@@ -34,4 +36,8 @@ public class Chat {
 
     @Column(name = "invite", nullable = false, unique = true)
     private String invite;
+
+    public void addMember(User user) {
+        members.add(user);
+    }
 }

@@ -59,6 +59,7 @@ public class MapService {
 
         if (chatState == 0) {
             var newChatId = chatService.createChat(title);
+            chatService.addMember(newChatId, senderId);
             var newChat = chatService.getChat(newChatId);
             newChat.ifPresent(marker::setChat);
         }

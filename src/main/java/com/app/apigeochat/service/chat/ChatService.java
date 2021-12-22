@@ -57,7 +57,7 @@ public class ChatService {
         if (chat.isEmpty() || user.isEmpty())
             return false;
 
-        chat.get().getMembers().add(user.get());
+        chat.get().addMember(user.get());
         return true;
     }
 
