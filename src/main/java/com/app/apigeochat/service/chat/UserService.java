@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -15,10 +16,15 @@ import java.util.UUID;
 @Transactional
 public class UserService {
     public final UserRepository userRepo;
+    public final EncryptionService encryptionService;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(
+            UserRepository userRepository,
+            EncryptionService encryptionService
+    ) {
         this.userRepo = userRepository;
+        this.encryptionService = encryptionService;
     }
 
     public Optional<User> getById(UUID id) {
@@ -43,7 +49,7 @@ public class UserService {
         User user = new User();
         user.setName(username);
         user.setEmail(email);
-        user.setPassword(password);
+        user.setPassword(encryptionService.encrypt(password));
         user.setRole(Role.User);
         return Optional.of(userRepo.save(user).getUserId());
     }
