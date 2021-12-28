@@ -6,8 +6,10 @@ import com.app.apigeochat.service.chat.MessageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -40,12 +42,14 @@ public class MessageController {
                 message,
                 new Date(timestamp),
                 Set.of(attachments));
-        return createdMessageUuid
-                .map(messageId -> {
-                    LOGGER.info(CREATE_MESSAGE_LOG_MESSAGE, messageId);
-                    return ResponseEntity.ok(messageId);
-                })
-                .orElse(ResponseEntity.notFound().build());
+
+        if (createdMessageUuid.isPresent()) {
+            LOGGER.info(CREATE_MESSAGE_LOG_MESSAGE, createdMessageUuid.get());
+            return ResponseEntity.ok(createdMessageUuid.get());
+        } else {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "An error occured while creating a message");
+        }
     }
 
     @GetMapping("/getLast")
@@ -53,7 +57,7 @@ public class MessageController {
             @RequestParam("chatId") String chatId,
             @RequestParam("numberOfMessages") int numberOfMessages
     ) {
-        List<MessageProvidingDto> messages = messageService
+        final var messages = messageService
                 .getLast(UUID.fromString(chatId), numberOfMessages).stream()
                 .map(MessageProvidingDto::new).collect(Collectors.toList());
         return ResponseEntity.ok(messages);
