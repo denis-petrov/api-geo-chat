@@ -51,7 +51,10 @@ public class UserController {
             LOGGER.info(CREATE_USER_LOG_MESSAGE, userId.get());
             return ResponseEntity.ok(userId.get());
         } else {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "User not found");
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "User with these parameters are already created"
+            );
         }
     }
 
