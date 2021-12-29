@@ -6,6 +6,7 @@ import com.app.apigeochat.repository.user.UserRepository;
 import com.app.apigeochat.service.chat.ChatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.transaction.Transactional;
 import java.util.List;
@@ -30,8 +31,16 @@ public class MapService {
         this.chatService = chatService;
     }
 
-    public List<Marker> getMarkers(UUID senderId) {
-        return markerRepo.findAll();
+    public List<Marker> getMarkers(UUID senderId, Double lat, Double lng, Double zoom) {
+        var delta = getCoordsDelta(zoom);
+
+        var minLat = lat - delta;
+        var maxLat = lat + delta;
+
+        var minLng = lng - delta;
+        var maxLng = lng + delta;
+
+        return markerRepo.findByLatBetweenAndLngBetween(minLat, maxLat, minLng, maxLng);
     }
 
     public Marker createMarker(
@@ -65,5 +74,9 @@ public class MapService {
         }
 
         return markerRepo.save(marker);
+    }
+
+    private Double getCoordsDelta(Double zoom) {
+        return 8.67 - 1.44 * Math.log(zoom);
     }
 }

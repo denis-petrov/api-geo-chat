@@ -31,9 +31,13 @@ public class MarkerController {
 
     @GetMapping
     public ResponseEntity<List<MarkerProvidingDto>> markersByPosition(
-            @RequestParam("senderId") String senderId
+            @RequestParam("senderId") String senderId,
+            @RequestParam("lat") Double lat,
+            @RequestParam("lng") Double lng,
+            @RequestParam("zoom") Double zoom
+
     ) {
-        final var markers = mapService.getMarkers(UUID.fromString(senderId));
+        final var markers = mapService.getMarkers(UUID.fromString(senderId), lat, lng, zoom);
         final var markersDto = markers.stream()
                 .map(MarkerProvidingDto::new)
                 .collect(Collectors.toList());
