@@ -6,10 +6,13 @@ import com.app.apigeochat.service.chat.ChatService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -28,17 +31,27 @@ public class ChatController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<UUID> createChat(@RequestParam("name") String name) {
-        UUID chatId = chatService.createChat(name);
-        LOGGER.info(CREATE_CHAT_LOG_MESSAGE, chatId);
-        return ResponseEntity.ok(chatId);
+    public ResponseEntity<UUID> createChat(
+            @RequestParam("name") String name,
+            @RequestParam("adminId") String adminId
+    ) {
+        Optional<UUID> chatId = chatService.createChat(name, UUID.fromString(adminId));
+        if (chatId.isPresent()) {
+            LOGGER.info(CREATE_CHAT_LOG_MESSAGE, chatId.get());
+            return ResponseEntity.ok(chatId.get());
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Admin not found");
+        }
     }
 
     @GetMapping("/get")
     public ResponseEntity<ChatProvidingDto> getChat(@RequestParam("chatId") String chatId) {
         final var chat = chatService.getChat(UUID.fromString(chatId));
-        return chat.map(value -> ResponseEntity.ok(new ChatProvidingDto(value)))
-                .orElse(ResponseEntity.notFound().build());
+        if (chat.isPresent()) {
+            return ResponseEntity.ok(new ChatProvidingDto(chat.get()));
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Chat not found");
+        }
     }
 
     @GetMapping("/getAllForUser")
@@ -52,9 +65,12 @@ public class ChatController {
 
     @GetMapping("/getInvite")
     public ResponseEntity<String> getInvite(@RequestParam("chatId") String chatId) {
-        return chatService.getChat(UUID.fromString(chatId))
-                .map(chat -> ResponseEntity.ok(chat.getInvite()))
-                .orElse(ResponseEntity.notFound().build());
+        final var chat = chatService.getChat(UUID.fromString(chatId));
+        if (chat.isPresent()) {
+            return ResponseEntity.ok(chat.get().getInvite());
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Chat not found");
+        }
     }
 
     @PostMapping("/updateName")
@@ -62,9 +78,12 @@ public class ChatController {
             @RequestParam("chatId") String chatId,
             @RequestParam("name") String newName
     ) {
-        return chatService.updateName(UUID.fromString(chatId), newName)
-                ? ResponseEntity.ok().build()
-                : ResponseEntity.internalServerError().build();
+        if (chatService.updateName(UUID.fromString(chatId), newName)) {
+            return ResponseEntity.ok().build();
+        } else {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "An error occurred while updating chat name");
+        }
     }
 
     @PostMapping("/remove")
@@ -79,9 +98,12 @@ public class ChatController {
             @RequestParam("chatId") String chatId,
             @RequestParam("userId") String userId
     ) {
-        return chatService.addMember(UUID.fromString(chatId), UUID.fromString(userId))
-                ? ResponseEntity.ok().build()
-                : ResponseEntity.internalServerError().build();
+        if (chatService.addMember(UUID.fromString(chatId), UUID.fromString(userId))) {
+            return ResponseEntity.ok().build();
+        } else {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "An error occurred while adding member to chat");
+        }
     }
 
     @PostMapping("/addMemberByInvite")
@@ -89,9 +111,12 @@ public class ChatController {
             @RequestParam("inviteToken") String inviteToken,
             @RequestParam("userId") String userId
     ) {
-        return chatService.addMemberByInvite(inviteToken, UUID.fromString(userId))
-                ? ResponseEntity.ok().build()
-                : ResponseEntity.internalServerError().build();
+        if (chatService.addMemberByInvite(inviteToken, UUID.fromString(userId))) {
+            return ResponseEntity.ok().build();
+        } else {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "An error occurred while adding member to chat by invite");
+        }
     }
 
     @PostMapping("/removeMember")
@@ -99,8 +124,11 @@ public class ChatController {
             @RequestParam("chatId") String chatId,
             @RequestParam("userId") String userId
     ) {
-        return chatService.removeMember(UUID.fromString(chatId), UUID.fromString(userId))
-                ? ResponseEntity.ok().build()
-                : ResponseEntity.internalServerError().build();
+        if (chatService.removeMember(UUID.fromString(chatId), UUID.fromString(userId))) {
+            return ResponseEntity.ok().build();
+        } else {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "An error occurred while removing member to chat");
+        }
     }
 }

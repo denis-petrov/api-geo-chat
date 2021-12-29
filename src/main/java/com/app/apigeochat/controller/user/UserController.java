@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -45,12 +46,16 @@ public class UserController {
             @RequestParam("password") String password,
             @RequestParam("email") String email
     ) {
-        return userService.create(name, email, password)
-                .map(uuid -> {
-                    LOGGER.info(CREATE_USER_LOG_MESSAGE, uuid);
-                    return ResponseEntity.ok(uuid);
-                })
-                .orElseGet(() -> ResponseEntity.internalServerError().build());
+        final var userId = userService.create(name, email, password);
+        if (userId.isPresent()) {
+            LOGGER.info(CREATE_USER_LOG_MESSAGE, userId.get());
+            return ResponseEntity.ok(userId.get());
+        } else {
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "User with these parameters are already created"
+            );
+        }
     }
 
     @PostMapping("/authByEmail")
@@ -74,19 +79,24 @@ public class UserController {
     @GetMapping("/getById")
     public ResponseEntity<UserProvidingDto> getById(@RequestParam("userId") String userId) {
         final var user = userService.getById(UUID.fromString(userId));
-        return user.map(value -> ResponseEntity.ok(new UserProvidingDto(value)))
-                .orElse(ResponseEntity.notFound().build());
+        if (user.isPresent()) {
+            return ResponseEntity.ok(new UserProvidingDto(user.get()));
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
     }
 
     @GetMapping("/searchByName")
     public ResponseEntity<List<UserProvidingDto>> searchByName(@RequestParam("substring") String substring) {
         List<UserProvidingDto> foundUsers = Collections.emptyList();
         if (!substring.isEmpty()) {
-            foundUsers = userService.searchByName(substring)
+            return ResponseEntity.ok(userService
+                    .searchByName(substring)
                     .stream().map(UserProvidingDto::new)
-                    .collect(Collectors.toList());
+                    .collect(Collectors.toList()));
+        } else {
+            return ResponseEntity.ok(foundUsers);
         }
-        return ResponseEntity.ok(foundUsers);
     }
 
     @PostMapping("/remove")
@@ -102,12 +112,16 @@ public class UserController {
             @RequestParam("invitingUserId") String invitingUserId
     ) {
         if (friendService.isFriends(UUID.fromString(invitedUserId), UUID.fromString(invitingUserId))) {
-            return ResponseEntity.internalServerError().build();
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Users are already friends");
         }
 
-        return friendService.inviteToFriends(UUID.fromString(invitedUserId), UUID.fromString(invitingUserId))
-                ? ResponseEntity.ok().build()
-                : ResponseEntity.internalServerError().build();
+        if (friendService.inviteToFriends(UUID.fromString(invitedUserId), UUID.fromString(invitingUserId))) {
+            return ResponseEntity.ok().build();
+        } else {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "An error occures while inviting a friend");
+        }
     }
 
     @PostMapping("/acceptInvite")
@@ -115,9 +129,12 @@ public class UserController {
             @RequestParam("invitedUserId") String invitedUserId,
             @RequestParam("invitingUserId") String invitingUserId
     ) {
-        return friendService.acceptInvite(UUID.fromString(invitedUserId), UUID.fromString(invitingUserId))
-                ? ResponseEntity.ok().build()
-                : ResponseEntity.internalServerError().build();
+        if (friendService.acceptInvite(UUID.fromString(invitedUserId), UUID.fromString(invitingUserId))) {
+            return ResponseEntity.ok().build();
+        } else {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "An error occurred while accepting a invite");
+        }
     }
 
     @PostMapping("/rejectInvite")
@@ -125,9 +142,12 @@ public class UserController {
             @RequestParam("invitedUserId") String invitedUserId,
             @RequestParam("invitingUserId") String invitingUserId
     ) {
-        return friendService.rejectInvite(UUID.fromString(invitedUserId), UUID.fromString(invitingUserId))
-                ? ResponseEntity.ok().build()
-                : ResponseEntity.internalServerError().build();
+        if (friendService.rejectInvite(UUID.fromString(invitedUserId), UUID.fromString(invitingUserId))) {
+            return ResponseEntity.ok().build();
+        } else {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "An error occurred while rejecting a invite");
+        }
     }
 
     @PostMapping("/removeFriend")
@@ -135,43 +155,54 @@ public class UserController {
             @RequestParam("userId") String userId,
             @RequestParam("friendId") String friendId
     ) {
-        return friendService.removeFriend(UUID.fromString(userId), UUID.fromString(friendId))
-                ? ResponseEntity.ok().build()
-                : ResponseEntity.internalServerError().build();
+        if (friendService.removeFriend(UUID.fromString(userId), UUID.fromString(friendId))) {
+            return ResponseEntity.ok().build();
+        } else {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "An error occurred while deleting a user");
+        }
     }
 
     @GetMapping("/friends")
     public ResponseEntity<List<UserProvidingDto>> getAllFriends(@RequestParam("userId") String userId) {
         final var optionalUser = userService.getById(UUID.fromString(userId));
 
-        return optionalUser
-                .map(user -> {
-                    List<UserProvidingDto> friends = user.getFriends()
-                            .stream().map(UserProvidingDto::new)
-                            .collect(Collectors.toList());
-                    return ResponseEntity.ok(friends);
-                })
-                .orElse(ResponseEntity.notFound().build());
+        if (optionalUser.isPresent()) {
+            List<UserProvidingDto> friends = optionalUser.get()
+                    .getFriends()
+                    .stream().map(UserProvidingDto::new)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(friends);
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
     }
 
     @GetMapping("/invites")
-    public ResponseEntity<List<UserProvidingDto>> getAllInvites(@RequestParam("userId") String  userId) {
+    public ResponseEntity<List<UserProvidingDto>> getAllInvites(@RequestParam("userId") String userId) {
         final var optionalUser = userService.getById(UUID.fromString(userId));
 
-        return optionalUser
-                .map(user -> {
-                    List<UserProvidingDto> invites = user.getInvites()
-                            .stream().map(UserProvidingDto::new)
-                            .collect(Collectors.toList());
-                    return ResponseEntity.ok(invites);
-                })
-                .orElse(ResponseEntity.notFound().build());
+        if (optionalUser.isPresent()) {
+            List<UserProvidingDto> invites = optionalUser.get()
+                    .getInvites()
+                    .stream().map(UserProvidingDto::new)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(invites);
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
     }
 
     private ResponseEntity<UserAuthDto> generateUserAuthResponse(Optional<User> user, String password) {
-        if (user.isEmpty()) return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        return Objects.equals(user.get().getPassword(), encryptionService.encrypt(password))
-                ? ResponseEntity.ok(new UserAuthDto(user.get()))
-                : ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        if (user.isPresent() &&
+                Objects.equals(
+                        user.get().getPassword(),
+                        encryptionService.encrypt(password)
+                )
+        ) {
+            return ResponseEntity.ok(new UserAuthDto(user.get()));
+        } else {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Authentication failed");
+        }
     }
 }

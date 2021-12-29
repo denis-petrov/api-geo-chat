@@ -36,10 +36,20 @@ public class User {
     @Size(max = 500, message = "User email is too long")
     private String email;
 
-    @OneToMany(fetch=FetchType.LAZY, cascade=CascadeType.PERSIST)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "friend",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "friend_id")
+    )
     private Set<User> friends = new HashSet<>();
 
-    @OneToMany(fetch=FetchType.LAZY, cascade=CascadeType.PERSIST)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "friend_invite",
+            joinColumns = @JoinColumn(name = "invited_user_id"),
+            inverseJoinColumns = @JoinColumn(name = "inviting_user_id")
+    )
     private Set<User> invites = new HashSet<>();
 
     @Column(name = "password", nullable = false)
