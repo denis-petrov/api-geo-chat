@@ -74,17 +74,34 @@ public class ChatService {
 
     public boolean removeMember(UUID chatId, UUID userId) {
         var optionalChat = chatRepo.findById(chatId);
-        optionalChat.ifPresent(chat ->{
-                    chat.getMembers().removeIf(user -> user.getUserId() == userId);
-                    chatRepo.save(chat);
-                });
-        return optionalChat.isPresent();
+
+        if (optionalChat.isPresent() && !isUserAdminInChat(optionalChat.get(), userId)) {
+            Chat chat = optionalChat.get();
+            chat.getMembers().removeIf(user -> user.getUserId().equals(userId));
+            chatRepo.save(chat);
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    public UUID createChat(String name) {
-        var chat = new Chat();
-        chat.setName(name);
-        chat.setInvite(RandomStringUtils.randomAlphanumeric(Chat.INVITE_STRING_LENGTH));
-        return chatRepo.save(chat).getChatId();
+    public Optional<UUID> createChat(String name, UUID adminId) {
+        if (userRepo.existsById(adminId)) {
+            var chat = new Chat();
+            var admin = new User();
+            admin.setUserId(adminId);
+
+            chat.setName(name);
+            chat.setInvite(RandomStringUtils.randomAlphanumeric(Chat.INVITE_STRING_LENGTH));
+            chat.setAdmin(admin);
+            chat.addMember(admin);
+            return Optional.of(chatRepo.save(chat).getChatId());
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    private boolean isUserAdminInChat(Chat chat, UUID userId) {
+        return chat.getAdmin().getUserId().equals(userId);
     }
 }

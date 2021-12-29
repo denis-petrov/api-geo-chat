@@ -31,10 +31,17 @@ public class ChatController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<UUID> createChat(@RequestParam("name") String name) {
-        UUID chatId = chatService.createChat(name);
-        LOGGER.info(CREATE_CHAT_LOG_MESSAGE, chatId);
-        return ResponseEntity.ok(chatId);
+    public ResponseEntity<UUID> createChat(
+            @RequestParam("name") String name,
+            @RequestParam("adminId") String adminId
+    ) {
+        Optional<UUID> chatId = chatService.createChat(name, UUID.fromString(adminId));
+        if (chatId.isPresent()) {
+            LOGGER.info(CREATE_CHAT_LOG_MESSAGE, chatId.get());
+            return ResponseEntity.ok(chatId.get());
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Admin not found");
+        }
     }
 
     @GetMapping("/get")

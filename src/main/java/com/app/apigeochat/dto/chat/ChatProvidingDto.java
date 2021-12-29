@@ -13,11 +13,13 @@ import java.util.stream.Collectors;
 @Setter
 public class ChatProvidingDto {
     private UUID chatId;
-    private List<UUID> members;
+    private UUID adminId;
     private String name;
+    private List<UUID> members;
 
     public ChatProvidingDto(Chat chat) {
         this.chatId = chat.getChatId();
+        this.adminId = chat.getAdmin().getUserId();
         this.name = chat.getName();
         this.members = chat.getMembers().stream()
                 .map(User::getUserId)

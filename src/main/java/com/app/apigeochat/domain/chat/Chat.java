@@ -27,7 +27,11 @@ public class Chat {
     @Column(name = "chat_id", insertable = false, updatable = false, nullable = false)
     private UUID chatId;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
+    @JoinTable(
+            name = "chat_member",
+            joinColumns = @JoinColumn(name = "chat_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> members = new HashSet<>();
 
     @Column(name = "name", nullable = false)
@@ -36,6 +40,10 @@ public class Chat {
 
     @Column(name = "invite", nullable = false, unique = true)
     private String invite;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "admin_id")
+    private User admin;
 
     public void addMember(User user) {
         members.add(user);
