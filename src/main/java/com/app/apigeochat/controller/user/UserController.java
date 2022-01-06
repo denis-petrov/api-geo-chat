@@ -86,13 +86,18 @@ public class UserController {
         }
     }
 
-    @GetMapping("/searchByName")
-    public ResponseEntity<List<UserProvidingDto>> searchByName(@RequestParam("substring") String substring) {
+    @GetMapping("/getUsersByName")
+    public ResponseEntity<List<UserProvidingDto>> searchByName(
+            @RequestParam("userId") String userId,
+            @RequestParam("name") String name
+    ) {
         List<UserProvidingDto> foundUsers = Collections.emptyList();
-        if (!substring.isEmpty()) {
+        if (!name.isEmpty()) {
             return ResponseEntity.ok(userService
-                    .searchByName(substring)
-                    .stream().map(UserProvidingDto::new)
+                    .searchByName(name)
+                    .stream()
+                    .map(UserProvidingDto::new)
+                    .filter(userDto -> !userDto.getUserId().equals(UUID.fromString(userId)))
                     .collect(Collectors.toList()));
         } else {
             return ResponseEntity.ok(foundUsers);
