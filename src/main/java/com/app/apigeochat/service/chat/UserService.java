@@ -39,7 +39,7 @@ public class UserService {
     }
 
     public List<User> searchByName(String substring) {
-        return userRepo.findByNameContaining(substring);
+        return userRepo.findByNameContainingIgnoreCase(substring);
     }
 
     public Optional<UUID> create(String username, String email, String password) {

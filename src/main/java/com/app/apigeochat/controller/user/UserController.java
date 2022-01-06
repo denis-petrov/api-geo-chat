@@ -91,16 +91,16 @@ public class UserController {
             @RequestParam("userId") String userId,
             @RequestParam("name") String name
     ) {
-        List<UserProvidingDto> foundUsers = Collections.emptyList();
         if (!name.isEmpty()) {
-            return ResponseEntity.ok(userService
-                    .searchByName(name)
-                    .stream()
-                    .map(UserProvidingDto::new)
-                    .filter(userDto -> !userDto.getUserId().equals(UUID.fromString(userId)))
-                    .collect(Collectors.toList()));
+            return ResponseEntity.ok(
+                    userService.searchByName(name)
+                            .stream()
+                            .map(UserProvidingDto::new)
+                            .filter(userDto -> !userDto.getUserId().equals(UUID.fromString(userId)))
+                            .collect(Collectors.toList())
+            );
         } else {
-            return ResponseEntity.ok(foundUsers);
+            return ResponseEntity.ok(Collections.emptyList());
         }
     }
 
