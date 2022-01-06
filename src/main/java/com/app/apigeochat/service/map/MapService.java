@@ -75,6 +75,21 @@ public class MapService {
         return markerRepo.save(marker);
     }
 
+    public Optional<Marker> getMarkerById(UUID markerId) {
+        return markerRepo.findById(markerId);
+    }
+
+    public boolean deleteMarkerById(UUID markerId) {
+        final var marker = getMarkerById(markerId);
+        marker.ifPresent(e -> {
+            if (e.getChat() != null) {
+                chatService.remove(e.getChat().getChatId());
+            }
+        });
+        markerRepo.deleteById(markerId);
+        return markerRepo.findById(markerId).isPresent();
+    }
+
     private Double getCoordsDelta(Double zoom) {
         return 8.67 - 1.44 * Math.log(zoom);
     }
