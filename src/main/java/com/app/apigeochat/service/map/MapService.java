@@ -80,12 +80,6 @@ public class MapService {
     }
 
     public boolean deleteMarkerById(UUID markerId) {
-        final var marker = getMarkerById(markerId);
-        marker.ifPresent(e -> {
-            if (e.getChat() != null) {
-                chatService.remove(e.getChat().getChatId());
-            }
-        });
         markerRepo.deleteById(markerId);
         return markerRepo.findById(markerId).isPresent();
     }

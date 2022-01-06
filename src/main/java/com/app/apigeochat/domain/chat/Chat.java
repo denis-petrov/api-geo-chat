@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
@@ -27,11 +29,12 @@ public class Chat {
     @Column(name = "chat_id", insertable = false, updatable = false, nullable = false)
     private UUID chatId;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "chat_member",
             joinColumns = @JoinColumn(name = "chat_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id"))
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
     private Set<User> members = new HashSet<>();
 
     @Column(name = "name", nullable = false)
@@ -41,7 +44,7 @@ public class Chat {
     @Column(name = "invite", nullable = false, unique = true)
     private String invite;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "admin_id")
     private User admin;
 
