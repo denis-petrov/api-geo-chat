@@ -15,7 +15,10 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "marker")
+@Table(name = "marker", indexes = {
+        @Index(name = "lat_index", columnList = "lat"),
+        @Index(name = "lng_index", columnList = "lng"),
+})
 public class Marker {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

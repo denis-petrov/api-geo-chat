@@ -17,7 +17,9 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "usr")
+@Table(name = "usr", indexes = {
+        @Index(name = "name_index", columnList = "name", unique = true)
+})
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
